@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,213 +14,210 @@
 
     <style>
         body {
-            background-color: #030712;
+            background-color: #020617;
             color: #f3f4f6;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow-x: hidden;
         }
-        .neon-border {
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
-            border: 1px solid rgba(6, 182, 212, 0.6);
+
+        /* ANIMASI BORDER NEON BERPUTAR (RUNNING BORDER) */
+        .neon-card-running {
+            position: relative;
+            background: #0b1528;
+            border-radius: 20px;
+            overflow: hidden;
+            z-index: 1;
         }
-        .neon-text-blue {
-            text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+        .neon-card-running::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, #22d3ee, #06b6d4, transparent 60%);
+            animation: rotate-border 4s linear infinite;
+            z-index: -2;
         }
-        .neon-btn-blue {
-            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        .neon-card-running::after {
+            content: '';
+            position: absolute;
+            inset: 2px; /* Tebal border neon */
+            background: #070f1e;
+            border-radius: 18px;
+            z-index: -1;
         }
-        .neon-btn-red {
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+
+        @keyframes rotate-border {
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: #030712;
+            background: #020617;
         }
         ::-webkit-scrollbar-thumb {
-            background: #06b6d4;
+            background: #22d3ee;
             border-radius: 10px;
         }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-    <!-- HEADER PROFILE -->
+    <!-- HEADER PROFILE BOT PENYEWA -->
     <div class="p-4 max-w-md mx-auto">
-        <div class="flex items-center justify-between p-4 bg-gray-900/80 rounded-2xl neon-border backdrop-blur-md">
-            <div class="flex items-center space-x-3">
-                <div class="relative">
-                    <img src="https://img.icons8.com/clouds/100/bot.png" class="w-12 h-12 rounded-full border-2 border-cyan-400" alt="Bot Logo">
-                    <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-gray-900 rounded-full animate-pulse"></span>
+        <div class="neon-card-running p-[2px]">
+            <div class="flex items-center justify-between p-4 rounded-2xl bg-[#070f1e]">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-12 h-12 rounded-full border-2 border-cyan-400 bg-cyan-950/50 flex items-center justify-center">
+                            <i class="fa-solid fa-robot text-cyan-400 text-xl animate-bounce"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-gray-950 rounded-full animate-pulse"></span>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-cyan-400 neon-text-glow" id="bot-name">Mengambil data...</h2>
+                        <p class="text-xs text-gray-400" id="bot-username">@loading_bot</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="text-sm font-bold text-cyan-400 neon-text-blue" id="bot-name">Asisten Bot</h2>
-                    <p class="text-xs text-gray-400" id="bot-username">@userbotv1</p>
-                </div>
+                <span class="px-3 py-1 text-[10px] font-bold text-green-400 bg-green-500/10 rounded-full border border-green-500/30">ONLINE</span>
             </div>
-            <span class="px-3 py-1 text-[10px] font-bold text-green-400 bg-green-500/10 rounded-full border border-green-500/30">ACTIVE</span>
         </div>
     </div>
 
-    <!-- TAB 1: DASHBOARD (UTAMA) -->
+    <!-- TAB 1: SIKLUS & STATS UTAMA -->
     <div id="tab-dashboard" class="tab-content p-4 max-w-md mx-auto space-y-4">
-        <!-- STATISTIK CARDS -->
+        
+        <!-- CARD SIKLUS HIDUP BOT -->
+        <div class="neon-card-running p-[2px]">
+            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-hourglass-half text-cyan-400 mr-2"></i>Siklus Bot Lu</h3>
+                <div class="flex justify-between items-center bg-gray-900/40 p-3 rounded-xl border border-gray-800">
+                    <div>
+                        <p class="text-[10px] text-gray-500 uppercase">Masa Aktif Sewa</p>
+                        <p class="text-xs font-semibold text-cyan-400 mt-0.5" id="val-expired">Aman Sentosa</p>
+                    </div>
+                    <span class="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-2.5 py-1 rounded-lg font-bold">Premium</span>
+                </div>
+                <div class="flex justify-between items-center bg-gray-900/40 p-3 rounded-xl border border-gray-800">
+                    <div>
+                        <p class="text-[10px] text-gray-500 uppercase">Kuota Link Hari Ini</p>
+                        <p class="text-xs font-semibold text-cyan-400 mt-0.5" id="val-quota">0 / 5 Terpakai</p>
+                    </div>
+                    <span class="text-[10px] text-gray-400" id="quota-percentage">0% Limit</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS COUNTER -->
         <div class="grid grid-cols-2 gap-3">
-            <div class="p-4 bg-gray-900/50 rounded-2xl border border-gray-800 text-center">
-                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total User</p>
-                <h1 class="text-3xl font-extrabold text-cyan-400 mt-1" id="val-users">0</h1>
+            <div class="neon-card-running p-[2px]">
+                <div class="p-4 rounded-2xl bg-[#070f1e] text-center">
+                    <p class="text-xs text-gray-400 font-semibold uppercase">Total Anak Buah</p>
+                    <h1 class="text-3xl font-extrabold text-cyan-400 mt-1 neon-text-glow" id="val-users">0</h1>
+                    <p class="text-[9px] text-gray-500 mt-1">Pengguna Terdaftar</p>
+                </div>
             </div>
-            <div class="p-4 bg-gray-900/50 rounded-2xl border border-gray-800 text-center">
-                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Tautan</p>
-                <h1 class="text-3xl font-extrabold text-cyan-400 mt-1" id="val-links">0</h1>
-            </div>
-        </div>
-
-        <div class="p-4 bg-gray-900/50 rounded-2xl border border-gray-800 text-center">
-            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Klik Tautan</p>
-            <h1 class="text-4xl font-extrabold text-cyan-400 mt-1" id="val-clicks">0</h1>
-        </div>
-
-        <!-- GRAFIK TREN NEON (Chart.js) -->
-        <div class="p-4 bg-gray-900/50 rounded-2xl border border-gray-800">
-            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-chart-line text-cyan-400 mr-2"></i>Tren Klik & Interaksi</h3>
-            <div class="h-40 w-full">
-                <canvas id="neonChart"></canvas>
+            <div class="neon-card-running p-[2px]">
+                <div class="p-4 rounded-2xl bg-[#070f1e] text-center">
+                    <p class="text-xs text-gray-400 font-semibold uppercase">Tautan Aktif</p>
+                    <h1 class="text-3xl font-extrabold text-cyan-400 mt-1 neon-text-glow" id="val-links">0</h1>
+                    <p class="text-[9px] text-gray-500 mt-1">Total Link Dibuat</p>
+                </div>
             </div>
         </div>
 
-        <!-- TOMBOL AKSI CEPAT -->
-        <div class="space-y-3 pt-2">
-            <button onclick="openModal('broadcast')" class="w-full p-4 neon-btn-blue text-white rounded-2xl font-bold flex items-center justify-between transition-transform active:scale-95">
-                <span><i class="fa-solid fa-bullhorn mr-2"></i> KIRIM BROADCAST GLOBAL</span>
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-            <button onclick="openModal('block')" class="w-full p-4 neon-btn-red text-white rounded-2xl font-bold flex items-center justify-between transition-transform active:scale-95">
-                <span><i class="fa-solid fa-ban mr-2"></i> BLOKIR ID PENGGUNA</span>
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
+        <!-- GRAFIK VISUALISASI CHATS -->
+        <div class="neon-card-running p-[2px]">
+            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-chart-simple text-cyan-400 mr-2"></i>Traffic Performa Hari Ini</h3>
+                <div class="h-44 w-full">
+                    <canvas id="neonDoubleChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- TAB 2: LINK MANAGER -->
+    <!-- TAB 2: TAUTAN DETAIL -->
     <div id="tab-links" class="tab-content hidden p-4 max-w-md mx-auto space-y-4">
-        <div class="flex items-center justify-between mb-2">
-            <h3 class="text-sm font-bold text-gray-300 uppercase"><i class="fa-solid fa-link text-cyan-400 mr-2"></i>Kelola Link Aktif</h3>
-            <span class="text-xs bg-cyan-950 text-cyan-400 px-2.5 py-1 rounded-full font-mono" id="link-count">0 Links</span>
+        <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-gray-300 uppercase"><i class="fa-solid fa-link text-cyan-400 mr-2"></i>Daftar Tautan Aktif</h3>
+            <span class="text-xs bg-cyan-950 text-cyan-400 px-3 py-1 rounded-full font-mono border border-cyan-500/20" id="link-count">0 Links</span>
         </div>
         
         <!-- List Tautan -->
-        <div class="space-y-3" id="link-container">
-            <!-- Diisi dinamis oleh JS -->
+        <div class="space-y-4" id="link-container">
+            <!-- Diisi otomatis oleh Javascript -->
         </div>
     </div>
 
-    <!-- TAB 3: FSUB SPONSOR -->
+    <!-- TAB 3: SPONSOR DETAIL -->
     <div id="tab-fsub" class="tab-content hidden p-4 max-w-md mx-auto space-y-4">
-        <h3 class="text-sm font-bold text-gray-300 uppercase"><i class="fa-solid fa-circle-check text-cyan-400 mr-2"></i>Sponsor FSub Aktif</h3>
-        <div class="p-4 bg-gray-900/50 rounded-2xl border border-gray-800 space-y-3" id="fsub-container">
-            <!-- Diisi dinamis oleh JS -->
+        <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-gray-300 uppercase"><i class="fa-solid fa-circle-check text-cyan-400 mr-2"></i>Detail Sponsor FSub</h3>
+            <span class="text-xs bg-cyan-950 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 font-mono" id="fsub-count">0 Ch</span>
         </div>
-    </div>
 
-    <!-- POP-UP MODAL (KIRIM DATA KE BOT) -->
-    <div id="action-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-gray-950 border border-cyan-500/40 rounded-3xl w-full max-w-xs p-6 space-y-4 animate-scaleUp">
-            <h3 id="modal-title" class="text-lg font-bold text-cyan-400 neon-text-blue">Judul Modal</h3>
-            <p id="modal-desc" class="text-xs text-gray-400">Deskripsi instruksi tindakan.</p>
-            
-            <div id="input-container">
-                <!-- Diisi dinamis sesuai aksi (textarea / input ID) -->
-            </div>
-
-            <div class="flex space-x-2 pt-2">
-                <button onclick="closeModal()" class="w-1/2 py-2.5 bg-gray-900 hover:bg-gray-800 rounded-xl text-xs font-semibold">Batal</button>
-                <button id="modal-submit-btn" class="w-1/2 py-2.5 neon-btn-blue text-xs font-bold rounded-xl">Kirim</button>
-            </div>
+        <div class="space-y-4" id="fsub-container">
+            <!-- Diisi otomatis oleh Javascript -->
         </div>
     </div>
 
     <!-- BOTTOM NAVIGATION BAR -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-950/90 border-t border-gray-900 backdrop-blur-lg py-3 px-6 flex justify-around items-center z-40 max-w-md mx-auto rounded-t-3xl shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+    <div class="fixed bottom-0 left-0 right-0 bg-gray-950/95 border-t border-cyan-500/20 backdrop-blur-lg py-3.5 px-6 flex justify-around items-center z-40 max-w-md mx-auto rounded-t-3xl shadow-[0_-8px_30px_rgba(6,182,212,0.15)]">
         <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center space-y-1 text-cyan-400">
-            <i class="fa-solid fa-gauge-high text-lg"></i>
-            <span class="text-[10px] font-medium">Dashboard</span>
+            <i class="fa-solid fa-shield-halved text-lg"></i>
+            <span class="text-[10px] font-bold">Siklus & Stats</span>
         </button>
         <button onclick="switchTab('links')" id="nav-links" class="flex flex-col items-center space-y-1 text-gray-500">
             <i class="fa-solid fa-link text-lg"></i>
-            <span class="text-[10px] font-medium">Tautan</span>
+            <span class="text-[10px] font-bold">List Tautan</span>
         </button>
         <button onclick="switchTab('fsub')" id="nav-fsub" class="flex flex-col items-center space-y-1 text-gray-500">
-            <i class="fa-solid fa-circle-check text-lg"></i>
-            <span class="text-[10px] font-medium">FSub</span>
+            <i class="fa-solid fa-circle-nodes text-lg"></i>
+            <span class="text-[10px] font-bold">Sponsor FSub</span>
         </button>
     </div>
 
     <script>
-        // Inisialisasi Telegram WebApp
+        // Init SDK Telegram
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // Ambil data query params yang dilempar oleh bot_renter.py
+        // Tarik Parameter URL dari Bot_Renter
         const urlParams = new URLSearchParams(window.location.search);
         const totalUsers = urlParams.get('users') || '0';
         const totalClicks = urlParams.get('clicks') || '0';
         const totalLinks = urlParams.get('links') || '0';
         const fsubsString = urlParams.get('fsubs') || '';
+        
+        const botName = urlParams.get('bot_name') || 'Bot Renter Gacor';
+        const botUsername = urlParams.get('bot_username') || '@renter_bot';
 
-        // Terapkan ke elemen HTML dashboard
+        // Terapkan ke Header & Stats Utama
+        document.getElementById('bot-name').innerText = botName;
+        document.getElementById('bot-username').innerText = botUsername;
         document.getElementById('val-users').innerText = totalUsers;
-        document.getElementById('val-clicks').innerText = totalClicks;
         document.getElementById('val-links').innerText = totalLinks;
-        document.getElementById('link-count').innerText = `${totalLinks} Links`;
+        document.getElementById('link-count').innerText = `${totalLinks} Tautan`;
 
-        // Render List FSub secara dinamis
-        const fsubContainer = document.getElementById('fsub-container');
-        if (fsubsString) {
-            const fsubList = fsubsString.split(',');
-            fsubContainer.innerHTML = '';
-            fsubList.forEach(chId => {
-                fsubContainer.innerHTML += `
-                    <div class="flex items-center justify-between p-3 bg-gray-900 rounded-xl border border-cyan-500/20">
-                        <span class="text-xs font-mono text-cyan-300"><i class="fa-solid fa-hashtag mr-1"></i> ${chId}</span>
-                        <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-md border border-cyan-500/20">Wajib Join</span>
-                    </div>
-                `;
-            });
-        } else {
-            fsubContainer.innerHTML = `<div class="text-center text-xs text-gray-500 py-4">Tidak ada channel sponsor aktif</div>`;
-        }
+        // Dummy Data untuk siklus sewa & kuota
+        document.getElementById('val-expired').innerText = "Aktif (30 Hari Lagi)";
+        document.getElementById('val-quota').innerText = `${totalLinks} / 5 Tautan`;
+        const percentage = Math.min((parseInt(totalLinks) / 5) * 100, 100);
+        document.getElementById('quota-percentage').innerText = `${percentage}% Limit`;
 
-        // Dummy Generator Link List
-        const linkContainer = document.getElementById('link-container');
-        if (parseInt(totalLinks) > 0) {
-            linkContainer.innerHTML = '';
-            for(let i = 1; i <= parseInt(totalLinks); i++) {
-                const randomId = Math.random().toString(36).substring(2, 10);
-                linkContainer.innerHTML += `
-                    <div class="p-3.5 bg-gray-900/80 rounded-2xl border border-gray-800 flex flex-col space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono text-cyan-400">/start ${randomId}</span>
-                            <span class="text-[10px] text-gray-400 font-semibold"><i class="fa-solid fa-eye text-cyan-400"></i> ${Math.floor(Math.random() * 50) + 1} Klik</span>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="copyToClipboard('https://t.me/userbotv1?start=${randomId}')" class="w-full py-1.5 bg-cyan-950 text-cyan-400 rounded-lg text-xs font-bold hover:bg-cyan-900 transition-colors">
-                                <i class="fa-regular fa-copy mr-1"></i> Salin Link
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-        } else {
-            linkContainer.innerHTML = `<div class="text-center text-xs text-gray-500 py-12">Belum ada tautan aktif yang dibuat</div>`;
-        }
-
-        // Navigasi Tab
+        // TAB NAVIGATION
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
@@ -233,88 +230,134 @@
             document.getElementById(`nav-${tabName}`).classList.remove('text-gray-500');
         }
 
-        // Fungsi Salin Clipboard
-        function copyToClipboard(text) {
+        // CLIPBOARD COPY
+        function copyLink(text) {
             navigator.clipboard.writeText(text);
             tg.showPopup({
-                title: "Berhasil",
-                message: "Tautan berhasil disalin ke papan klip!",
+                title: "Gokil! Link Disalin",
+                message: "Tautan udah nempel di papan klip lu.",
                 buttons: [{type: "ok"}]
             });
         }
 
-        // Manajer Modal Pop-up
-        let activeAction = '';
-        function openModal(action) {
-            activeAction = action;
-            const modal = document.getElementById('action-modal');
-            const title = document.getElementById('modal-title');
-            const desc = document.getElementById('modal-desc');
-            const container = document.getElementById('input-container');
-
-            if (action === 'broadcast') {
-                title.innerText = "Broadcast Global";
-                desc.innerText = "Masukkan pesan broadcast yang ingin disebarkan langsung ke seluruh member aktif.";
-                container.innerHTML = `<textarea id="modal-input" placeholder="Tulis isi broadcast Anda di sini..." class="w-full h-24 p-3 bg-gray-900 border border-gray-800 rounded-xl text-xs focus:border-cyan-500 outline-none text-white resize-none"></textarea>`;
-            } else if (action === 'block') {
-                title.innerText = "Blokir User";
-                desc.innerText = "Masukkan Telegram User ID untuk memblokir akses secara permanen.";
-                container.innerHTML = `<input id="modal-input" type="number" placeholder="Contoh: 12457896" class="w-full p-3 bg-gray-900 border border-gray-800 rounded-xl text-xs focus:border-cyan-500 outline-none text-white">`;
-            }
-
-            modal.classList.remove('hidden');
+        // RENDER DETAIL LIST CHANNEL SPONSOR (FSUB)
+        const fsubContainer = document.getElementById('fsub-container');
+        if (fsubsString) {
+            const fsubList = fsubsString.split(',');
+            document.getElementById('fsub-count').innerText = `${fsubList.length} Ch`;
+            fsubContainer.innerHTML = '';
+            
+            fsubList.forEach((chId, index) => {
+                fsubContainer.innerHTML += `
+                    <div class="neon-card-running p-[2px]">
+                        <div class="p-4 rounded-2xl bg-[#070f1e] flex items-center justify-between">
+                            <div class="flex items-center space-x-3.5">
+                                <div class="w-11 h-11 bg-cyan-950/60 rounded-xl flex items-center justify-center border border-cyan-500/30 text-cyan-400 font-extrabold text-lg">
+                                    C${index + 1}
+                                </div>
+                                <div class="space-y-0.5">
+                                    <h4 class="text-xs font-bold text-cyan-100">Sponsor Channel ${index + 1}</h4>
+                                    <p class="text-[10px] text-gray-500 font-mono">${chId}</p>
+                                    <p class="text-[9px] text-green-400 font-semibold uppercase tracking-wider"><i class="fa-solid fa-lock mr-1"></i> FSub Terkunci</p>
+                                </div>
+                            </div>
+                            <button onclick="copyLink('${chId}')" class="px-3.5 py-1.5 bg-cyan-950 text-cyan-400 text-xs font-bold rounded-xl border border-cyan-500/30 active:scale-95 transition-transform">
+                                <i class="fa-solid fa-link"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            fsubContainer.innerHTML = `
+                <div class="text-center text-xs text-gray-500 py-12">
+                    <i class="fa-solid fa-circle-exclamation text-3xl text-cyan-800 mb-2"></i>
+                    <p>Lu belum daftarin channel sponsor wajib join nih.</p>
+                </div>
+            `;
         }
 
-        function closeModal() {
-            document.getElementById('action-modal').classList.add('hidden');
+        // RENDER TAUTAN AKTIF DENGAN BORDER RUNNING
+        const linkContainer = document.getElementById('link-container');
+        if (parseInt(totalLinks) > 0) {
+            linkContainer.innerHTML = '';
+            for(let i = 1; i <= parseInt(totalLinks); i++) {
+                const dummyId = Math.random().toString(36).substring(2, 9);
+                const fullUrl = `https://t.me/${botUsername.replace('@','')}/?start=${dummyId}`;
+                linkContainer.innerHTML += `
+                    <div class="neon-card-running p-[2px]">
+                        <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
+                                    <span class="text-xs font-bold text-cyan-300 font-mono">/start ${dummyId}</span>
+                                </div>
+                                <span class="text-[10px] text-gray-400"><i class="fa-solid fa-circle-play text-cyan-400 mr-1"></i> Video Media</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] text-gray-500 py-1">
+                                <span>Kunjungan: <b>${Math.floor(Math.random() * 80) + 10} user</b></span>
+                                <span>Klik Unik: <b>${Math.floor(Math.random() * 40) + 5} kali</b></span>
+                            </div>
+                            <div class="flex space-x-2 pt-1">
+                                <button onclick="copyLink('${fullUrl}')" class="w-full py-2 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-bold transition-all active:scale-95">
+                                    <i class="fa-regular fa-copy mr-1"></i> Salin Link Gacor
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            linkContainer.innerHTML = `
+                <div class="text-center text-xs text-gray-500 py-12">
+                    <i class="fa-solid fa-folder-open text-3xl text-cyan-800 mb-2"></i>
+                    <p>Lu belum bikin tautan sama sekali hari ini.</p>
+                </div>
+            `;
         }
 
-        // Submit Aksi Kirim ke Telegram (Akan ditangkap oleh handler service message di bot_renter.py)
-        document.getElementById('modal-submit-btn').addEventListener('click', () => {
-            const val = document.getElementById('modal-input').value;
-            if(!val) return tg.showAlert("Kolom input tidak boleh kosong!");
-
-            let payload = {};
-            if(activeAction === 'broadcast') {
-                payload = { action: 'broadcast', text: val };
-            } else if(activeAction === 'block') {
-                payload = { action: 'block_user', user_id: val };
-            }
-
-            // Kirim data ke Telegram Bot
-            tg.sendData(JSON.stringify(payload));
-            closeModal();
-            tg.close(); // Tutup WebApp otomatis setelah aksi dikirim
-        });
-
-        // GRAFIK INTERAKTIF NEON (CHART.JS)
-        const ctx = document.getElementById('neonChart').getContext('2d');
+        // DOUBLE CHART: GRAFIK KUNJUNGAN VS KLIK HARI INI (CHART.JS)
+        const ctx = document.getElementById('neonDoubleChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Sn', 'Sl', 'Rb', 'Km', 'Jm', 'Sb', 'Mg'],
-                datasets: [{
-                    label: 'Klik',
-                    data: [12, 19, 3, 5, 2, 3, parseInt(totalClicks)],
-                    borderColor: '#06b6d4',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#06b6d4',
-                    pointHoverRadius: 7,
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(6, 182, 212, 0.05)'
-                }]
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                datasets: [
+                    {
+                        label: 'Kunjungan Bot',
+                        data: [5, 12, 28, 45, 30, parseInt(totalUsers) + 5],
+                        borderColor: '#22d3ee',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#22d3ee',
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'Interaksi Link',
+                        data: [2, 8, 15, parseInt(totalClicks), 25, 32],
+                        borderColor: '#0891b2',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointBackgroundColor: '#0891b2',
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: {
+                        labels: { color: '#9ca3af', font: { size: 9, weight: 'bold' } }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 10 } } },
-                    y: { grid: { color: 'rgba(31, 41, 55, 0.5)' }, ticks: { color: '#6b7280', font: { size: 10 } } }
+                    x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 9 } } },
+                    y: { grid: { color: 'rgba(31, 41, 55, 0.4)' }, ticks: { color: '#6b7280', font: { size: 9 } } }
                 }
             }
         });
     </script>
 </body>
-        </html>
+                                                                                         </html>
