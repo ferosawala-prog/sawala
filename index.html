@@ -3,43 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Renter Admin Panel</title>
+    <title>Renter Admin Panel - Neon Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Desain Background & Efek Neon */
+        body {
+            background-color: #050811;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Animasi Neon Glow Running Border */
+        @keyframes neon-glow {
+            0%, 100% {
+                border-color: #00f0ff;
+                box-shadow: 0 0 8px rgba(0, 240, 255, 0.4), inset 0 0 8px rgba(0, 240, 255, 0.2);
+            }
+            50% {
+                border-color: #0072ff;
+                box-shadow: 0 0 18px rgba(0, 114, 255, 0.8), inset 0 0 12px rgba(0, 114, 255, 0.4);
+            }
+        }
+
+        .neon-card {
+            background: rgba(13, 20, 38, 0.8);
+            border: 1.5px solid #00f0ff;
+            backdrop-filter: blur(10px);
+            animation: neon-glow 3s infinite ease-in-out;
+            border-radius: 16px;
+        }
+
+        /* Pulse Dot untuk Status Online */
+        .pulse-green {
+            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+            animation: pulse-green-anim 1.8s infinite;
+        }
+
+        @keyframes pulse-green-anim {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white font-sans p-4">
+<body class="text-white p-4">
 
-    <!-- Header Panel -->
-    <div class="flex items-center space-x-3 mb-6">
-        <div class="bg-blue-600 p-2 rounded-lg text-2xl">📊</div>
-        <div>
-            <h1 class="text-xl font-bold" id="admin-name">Memuat Admin...</h1>
-            <p class="text-xs text-gray-400">Renter Premium Dashboard</p>
+    <!-- 1. PROFILE SECTION (NEON ACCENT) -->
+    <div class="neon-card p-4 mb-6 flex items-center space-x-4 relative overflow-hidden">
+        <!-- Foto Profil Glowing -->
+        <div class="relative w-16 h-16 rounded-full border-2 border-[#00f0ff] shadow-[0_0_10px_#00f0ff] overflow-hidden flex-shrink-0">
+            <img id="user-photo" src="https://img.icons8.com/glowing/100/user-male-circle.png" class="w-full h-full object-cover" alt="Profile">
+        </div>
+        <!-- Detail Akun -->
+        <div class="flex-1">
+            <h1 class="text-lg font-extrabold text-[#00f0ff] tracking-wide" id="user-name">Memuat Nama...</h1>
+            <p class="text-xs text-gray-400" id="user-username">@username</p>
+            <p class="text-[10px] text-gray-500 font-mono mt-0.5" id="user-id">ID: 00000000</p>
+        </div>
+        <!-- Status Indicator -->
+        <div class="absolute top-4 right-4 flex items-center space-x-1.5 bg-green-950/40 px-2.5 py-1 rounded-full border border-green-500/30">
+            <span class="w-2.5 h-2.5 bg-green-400 rounded-full pulse-green"></span>
+            <span class="text-[10px] text-green-400 font-bold tracking-wider">ACTIVE</span>
         </div>
     </div>
 
-    <!-- Mini Dashboard Cards -->
-    <div class="grid grid-cols-2 gap-3 mb-6">
-        <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 text-center">
-            <span class="text-xs text-gray-400 block">Total Pengguna</span>
-            <span class="text-xl font-bold text-blue-400">Aktif</span>
+    <!-- 2. STATISTIK SECTION (2 COLUMN GRID) -->
+    <h2 class="text-xs font-bold text-[#00f0ff] mb-3 uppercase tracking-widest pl-1">⚡ STATISTIK UTAMA</h2>
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="neon-card p-3 text-center">
+            <span class="text-[10px] text-gray-400 block uppercase font-semibold">Total User</span>
+            <span class="text-2xl font-black text-white mt-1 block" id="stat-users">0</span>
         </div>
-        <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 text-center">
-            <span class="text-xs text-gray-400 block">Status Bot</span>
-            <span class="text-xl font-bold text-green-400">ONLINE</span>
+        <div class="neon-card p-3 text-center">
+            <span class="text-[10px] text-gray-400 block uppercase font-semibold">Total Tautan</span>
+            <span class="text-2xl font-black text-white mt-1 block" id="stat-links">0</span>
+        </div>
+        <div class="neon-card p-3 text-center col-span-2">
+            <span class="text-[10px] text-gray-400 block uppercase font-semibold">Total Klik Tautan</span>
+            <span class="text-2xl font-black text-[#00f0ff] mt-1 block shadow-[#00f0ff]/10" id="stat-clicks">0</span>
         </div>
     </div>
 
-    <!-- Quick Action Menu -->
-    <h2 class="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Kontrol Cepat</h2>
-    <div class="space-y-2">
-        <button onclick="sendAction('broadcast')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-xl shadow-lg transition flex justify-between items-center">
-            <span>📢 Kirim Broadcast Global</span>
-            <span>➔</span>
+    <!-- 3. LIST CHANNEL FSUB (DYNAMICALY INJECTED) -->
+    <h2 class="text-xs font-bold text-[#00f0ff] mb-3 uppercase tracking-widest pl-1">📋 LIST FSUB AKTIF</h2>
+    <div class="space-y-2 mb-6" id="fsub-container">
+        <!-- List Fsub akan dirender otomatis oleh JS di bawah -->
+        <div class="text-center text-xs text-gray-500 py-2">Tidak ada channel sponsor aktif</div>
+    </div>
+
+    <!-- 4. ACTION PANEL -->
+    <h2 class="text-xs font-bold text-[#00f0ff] mb-3 uppercase tracking-widest pl-1">🛠️ KONTROL ADMIN</h2>
+    <div class="space-y-3">
+        <button onclick="sendAction('broadcast')" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-extrabold py-3 px-4 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all flex justify-between items-center text-sm">
+            <span>📢 KIRIM BROADCAST GLOBAL</span>
+            <span class="text-lg">➔</span>
         </button>
-        <button onclick="sendAction('block_user')" class="w-full bg-gray-800 hover:bg-gray-750 text-red-400 font-medium py-3 px-4 rounded-xl border border-red-900/30 transition flex justify-between items-center">
-            <span>🚫 Blokir ID Pengguna</span>
-            <span>➔</span>
+        <button onclick="sendAction('block_user')" class="w-full bg-gray-900 hover:bg-gray-800 text-red-400 font-bold py-3.5 px-4 rounded-xl border border-red-500/20 transition flex justify-between items-center text-sm">
+            <span>🚫 BLOKIR ID PENGGUNA</span>
+            <span class="text-lg">➔</span>
         </button>
     </div>
 
@@ -47,10 +118,52 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // 1. Memuat Informasi Akun Pengguna dari Telegram API secara Real-Time
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('admin-name').innerText = tg.initDataUnsafe.user.first_name;
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('user-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            document.getElementById('user-username').innerText = user.username ? '@' + user.username : 'Tidak ada username';
+            document.getElementById('user-id').innerText = 'ID: ' + user.id;
+            
+            // Mengambil foto profil asli jika disediakan Telegram
+            if (user.photo_url) {
+                document.getElementById('user-photo').src = user.photo_url;
+            }
         }
 
+        // 2. Membaca & Mengurai Data Parameter Database dari URL Link WebApp
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        const usersCount = urlParams.get('users') || '0';
+        const clicksCount = urlParams.get('clicks') || '0';
+        const linksCount = urlParams.get('links') || '0';
+        const fsubsString = urlParams.get('fsubs') || '';
+
+        // Pasang data ke HTML
+        document.getElementById('stat-users').innerText = Number(usersCount).toLocaleString();
+        document.getElementById('stat-clicks').innerText = Number(clicksCount).toLocaleString();
+        document.getElementById('stat-links').innerText = Number(linksCount).toLocaleString();
+
+        // Render List FSub Sponsor
+        const fsubContainer = document.getElementById('fsub-container');
+        if (fsubsString) {
+            fsubContainer.innerHTML = ''; // Hapus pesan kosong
+            const channels = fsubsString.split(',');
+            channels.forEach((channel, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900/50 border border-cyan-500/10 p-3 rounded-xl flex justify-between items-center shadow-inner";
+                card.innerHTML = `
+                    <div class="flex items-center space-x-2.5">
+                        <span class="text-cyan-400 text-xs font-mono font-bold">#${index + 1}</span>
+                        <span class="text-sm font-semibold tracking-wider text-gray-200">${channel.trim()}</span>
+                    </div>
+                    <span class="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-extrabold px-2.5 py-0.5 rounded-full tracking-wider">SPONSOR</span>
+                `;
+                fsubContainer.appendChild(card);
+            });
+        }
+
+        // 3. Mengirim Perintah Kembali ke Bot Python
         function sendAction(actionName) {
             const dataToSend = JSON.stringify({ action: actionName });
             tg.sendData(dataToSend);
@@ -58,4 +171,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
