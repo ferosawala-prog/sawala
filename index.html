@@ -219,51 +219,74 @@
         </button>
     </div>
 
+
     <script>
         // Init SDK Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // Ambil data dari URL Parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        const botName = urlParams.get('bot_name') || 'Asisten Bot';
-        const botUsername = urlParams.get('bot_username') || '@botmediaku_bot';
-        const expiredDate = urlParams.get('expired') || '2026-07-15 15:55:43';
-        const ownerUsername = urlParams.get('owner') || 'bapak_owner'; // Username Telegram Lu/Owner
-        
-        const limitUsed = parseInt(urlParams.get('limit_used') || '1');
-        const limitMax = parseInt(urlParams.get('limit_max') || '5');
-        
-        const totalUsers = parseInt(urlParams.get('total_users') || '1');
-        const newUsersToday = parseInt(urlParams.get('new_users_today') || '1');
-        const totalClicks = parseInt(urlParams.get('total_clicks') || '3');
-
-        // Dekompresi Array JSON FSub & Link
-        let fsubList = [];
-        let linksList = [];
-        try {
-            fsubList = JSON.parse(urlParams.get('fsubs') || '[]');
-            linksList = JSON.parse(urlParams.get('links') || '[]');
-        } catch (e) {
-            console.error("Gagal parse data JSON", e);
+        // Beritahu Telegram untuk tidak memakai versi cache jika ada update
+        if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
+            tg.disableClosingConfirmation(); // Opsional: bypass konfirmasi tutup
         }
 
-        // Terapkan ke Header & Stats Utama
-        document.getElementById('bot-name').innerText = botName;
-        document.getElementById('bot-username').innerText = botUsername;
-        document.getElementById('val-expired').innerText = expiredDate;
-        
-        document.getElementById('val-quota').innerText = `${limitUsed} / ${limitMax} Harian`;
-        const percentage = Math.min((limitUsed / limitMax) * 100, 100);
-        document.getElementById('quota-percentage').innerText = `${percentage}% Terpakai`;
+        // Fungsi Utama untuk Mengambil dan Merender Data Terbaru
+        function updateDashboardData() {
+            // Ambil data dari URL Parameter saat ini (selalu fresh)
+            const urlParams = new URLSearchParams(window.location.search);
 
-        document.getElementById('val-users').innerText = totalUsers;
-        document.getElementById('val-new-users').innerText = `${newUsersToday} user`;
-        document.getElementById('val-links').innerText = linksList.length;
-        document.getElementById('val-clicks').innerText = `${totalClicks} kali`;
-        document.getElementById('link-count').innerText = `${linksList.length} Tautan`;
+            const botName = urlParams.get('bot_name') || 'Asisten Bot';
+            const botUsername = urlParams.get('bot_username') || '@botmediaku_bot';
+            const expiredDate = urlParams.get('expired') || '2026-07-15 15:55:43';
+            const ownerUsername = urlParams.get('owner') || 'bapak_owner';
+
+            const limitUsed = parseInt(urlParams.get('limit_used') || '0');
+            const limitMax = parseInt(urlParams.get('limit_max') || '5');
+
+            const totalUsers = parseInt(urlParams.get('total_users') || '0');
+            const newUsersToday = parseInt(urlParams.get('new_users_today') || '0');
+            const totalClicks = parseInt(urlParams.get('total_clicks') || '0');
+
+            // Dekompresi Array JSON FSub & Link
+            let fsubList = [];
+            let linksList = [];
+            try {
+                const fsubsRaw = urlParams.get('fsubs');
+                const linksRaw = urlParams.get('links');
+                
+                fsubList = fsubsRaw ? JSON.parse(decodeURIComponent(fsubsRaw)) : [];
+                linksList = linksRaw ? JSON.parse(decodeURIComponent(linksRaw)) : [];
+            } catch (e) {
+                console.error("Gagal parse data JSON", e);
+            }
+
+            // Terapkan ke Header & Stats Utama secara real-time
+            document.getElementById('bot-name').innerText = botName;
+            document.getElementById('bot-username').innerText = botUsername;
+            document.getElementById('val-expired').innerText = expiredDate;
+
+            document.getElementById('val-quota').innerText = `${limitUsed} / ${limitMax} Harian`;
+            
+            // Hitung persentase limit terpakai secara presisi
+            const percentage = limitMax > 0 ? Math.min(Math.round((limitUsed / limitMax) * 100), 100) : 0;
+            document.getElementById('quota-percentage').innerText = `${percentage}% Terpakai`;
+
+            document.getElementById('val-users').innerText = totalUsers;
+            document.getElementById('val-new-users').innerText = `${newUsersToday} user`;
+            document.getElementById('val-links').innerText = linksList.length;
+            document.getElementById('val-clicks').innerText = `${totalClicks} kali`;
+            document.getElementById('link-count').innerText = `${linksList.length} Tautan`;
+
+            // Panggil fungsi render list data fsub & link milikmu di sini
+            if (typeof renderFsubs === "function") renderFsubs(fsubList);
+            if (typeof renderLinks === "function") renderLinks(linksList);
+        }
+
+        // Jalankan setiap kali halaman selesai dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            updateDashboardData();
+        });
 
         // ==========================================
         // LOGIKA KONTROL MUSIK bruno.mp3 (NAVIGASI)
