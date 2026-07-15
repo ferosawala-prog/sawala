@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renter Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans p-4">
+
+    <!-- Header Panel -->
+    <div class="flex items-center space-x-3 mb-6">
+        <div class="bg-blue-600 p-2 rounded-lg text-2xl">📊</div>
+        <div>
+            <h1 class="text-xl font-bold" id="admin-name">Memuat Admin...</h1>
+            <p class="text-xs text-gray-400">Renter Premium Dashboard</p>
+        </div>
+    </div>
+
+    <!-- Mini Dashboard Cards -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 text-center">
+            <span class="text-xs text-gray-400 block">Total Pengguna</span>
+            <span class="text-xl font-bold text-blue-400">Aktif</span>
+        </div>
+        <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 text-center">
+            <span class="text-xs text-gray-400 block">Status Bot</span>
+            <span class="text-xl font-bold text-green-400">ONLINE</span>
+        </div>
+    </div>
+
+    <!-- Quick Action Menu -->
+    <h2 class="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Kontrol Cepat</h2>
+    <div class="space-y-2">
+        <button onclick="sendAction('broadcast')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-xl shadow-lg transition flex justify-between items-center">
+            <span>📢 Kirim Broadcast Global</span>
+            <span>➔</span>
+        </button>
+        <button onclick="sendAction('block_user')" class="w-full bg-gray-800 hover:bg-gray-750 text-red-400 font-medium py-3 px-4 rounded-xl border border-red-900/30 transition flex justify-between items-center">
+            <span>🚫 Blokir ID Pengguna</span>
+            <span>➔</span>
+        </button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('admin-name').innerText = tg.initDataUnsafe.user.first_name;
+        }
+
+        function sendAction(actionName) {
+            const dataToSend = JSON.stringify({ action: actionName });
+            tg.sendData(dataToSend);
+            tg.close();
+        }
+    </script>
+</body>
+</html>
