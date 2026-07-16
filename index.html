@@ -3,546 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Dashboard - Bot Renter Pro</title>
-    <!-- Tailwind CSS & FontAwesome Icons -->
+    <title>Neon Renter Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
-        body {
-            background-color: #020617;
-            color: #f3f4f6;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* ANIMASI BORDER NEON BERPUTAR (RUNNING BORDER) */
-        .neon-card-running {
-            position: relative;
-            background: #0b1528;
-            border-radius: 20px;
-            overflow: hidden;
-            z-index: 1;
-        }
-        .neon-card-running::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, #38bdf8, #0ea5e9, transparent 60%);
-            animation: rotate-border 3.5s linear infinite;
-            z-index: -2;
-        }
-        .neon-card-running::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: #070f1e;
-            border-radius: 18px;
-            z-index: -1;
-        }
-
-        @keyframes rotate-border {
-            100% { transform: rotate(360deg); }
-        }
-
-        .neon-text-glow {
-            text-shadow: 0 0 12px rgba(56, 189, 248, 0.9);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #020617;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #38bdf8;
-            border-radius: 10px;
-        }
+        body { background-color: #020617; color: #f3f4f6; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .neon-card { background: linear-gradient(135deg, #0b1528 0%, #070f1e 100%); border: 1px solid rgba(56, 189, 248, 0.1); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+        .neon-glow-text { text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
-<body class="pb-28">
+<body class="pb-24 select-none">
 
-    <!-- AUDIO PLAYER TERSEMBUNYI -->
-    <audio id="bg-music" loop>
-        <source src="bruno.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- HEADER PROFILE BOT PENYEWA -->
+    <!-- HEADER PROFILE -->
     <div class="p-4 max-w-md mx-auto">
-        <div class="neon-card-running p-[2px]">
-            <div class="flex items-center justify-between p-4 rounded-2xl bg-[#070f1e]">
-                <div class="flex items-center space-x-3">
-                    <div class="relative">
-                        <div class="w-12 h-12 rounded-full border-2 border-sky-400 bg-sky-950/50 flex items-center justify-center">
-                            <i class="fa-solid fa-robot text-sky-400 text-xl animate-bounce"></i>
-                        </div>
-                        <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-gray-950 rounded-full animate-pulse"></span>
-                    </div>
-                    <div>
-                        <h2 class="text-sm font-bold text-sky-400 neon-text-glow" id="bot-name">Mengambil data...</h2>
-                        <p class="text-xs text-gray-400" id="bot-username">@loading_bot</p>
-                    </div>
+        <div class="neon-card rounded-2xl p-4 flex items-center justify-between border-b-2 border-sky-500/30">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-full bg-sky-950/50 border border-sky-500/40 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-robot text-sky-400 text-xl animate-pulse"></i>
                 </div>
-                <span class="px-3 py-1 text-[10px] font-bold text-green-400 bg-green-500/10 rounded-full border border-green-500/30">ONLINE</span>
+                <div>
+                    <h2 class="text-sm font-bold text-sky-400 neon-glow-text" id="bot-name">Loading...</h2>
+                    <p class="text-xs text-gray-400 font-mono" id="bot-username">@loading_bot</p>
+                </div>
             </div>
+            <span id="badge-status" class="px-2.5 py-1 text-[10px] font-extrabold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 tracking-wider">AKTIF</span>
         </div>
     </div>
 
-    <!-- TAB 1: SIKLUS & STATS UTAMA -->
-    <div id="tab-dashboard" class="tab-content p-4 max-w-md mx-auto space-y-4">
+    <!-- MAIN DASHBOARD TAB -->
+    <div id="tab-dashboard" class="tab-content active p-4 max-w-md mx-auto space-y-4">
         
-        <!-- CARD SIKLUS HIDUP BOT -->
-        <div class="neon-card-running p-[2px]">
-            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
-                <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-hourglass-half text-sky-400 mr-2"></i>Masa Aktif & Limit Lu</h3>
-                    <span id="badge-status" class="text-[10px] bg-sky-500/10 text-sky-400 border border-sky-500/30 px-2.5 py-1 rounded-lg font-bold">Premium</span>
+        <!-- MASA AKTIF & LIMIT -->
+        <div class="neon-card rounded-2xl p-4 space-y-3">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-calendar-days text-sky-400 mr-1"></i> Informasi Lisensi</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-gray-800/60">
+                    <p class="text-[9px] text-gray-500 uppercase font-bold">Masa Aktif</p>
+                    <p class="text-xs font-semibold text-sky-400 mt-0.5" id="val-expired">Loading...</p>
                 </div>
-                
-                <div class="flex justify-between items-center bg-gray-900/40 p-3 rounded-xl border border-gray-800">
-                    <div>
-                        <p class="text-[10px] text-gray-500 uppercase">Berlaku Hingga</p>
-                        <p class="text-xs font-semibold text-sky-400 mt-0.5" id="val-expired">Loading...</p>
-                    </div>
-                </div>
-                
-                <div class="flex justify-between items-center bg-gray-900/40 p-3 rounded-xl border border-gray-800">
-                    <div>
-                        <p class="text-[10px] text-gray-500 uppercase">Limit Pembuatan Link</p>
-                        <p class="text-xs font-semibold text-sky-400 mt-0.5" id="val-quota">0 / 0 Harian</p>
-                    </div>
-                    <span class="text-[10px] text-gray-400" id="quota-percentage">0% Terpakai</span>
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-gray-800/60">
+                    <p class="text-[9px] text-gray-500 uppercase font-bold">Kuota Harian</p>
+                    <p class="text-xs font-semibold text-sky-400 mt-0.5" id="val-quota">0 / 0</p>
                 </div>
             </div>
         </div>
 
         <!-- STATS COUNTER -->
         <div class="grid grid-cols-2 gap-3">
-            <div class="neon-card-running p-[2px]">
-                <div class="p-4 rounded-2xl bg-[#070f1e] text-center">
-                    <p class="text-xs text-gray-400 font-semibold uppercase">Total Anak Buah</p>
-                    <h1 class="text-3xl font-extrabold text-sky-400 mt-1 neon-text-glow" id="val-users">0</h1>
-                    <p class="text-[9px] text-gray-400 mt-1">Baru Hari Ini: <span class="text-sky-400 font-bold" id="val-new-users">0</span></p>
+            <div class="neon-card rounded-2xl p-4 text-center relative overflow-hidden">
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total User</p>
+                <h1 class="text-3xl font-black text-sky-400 mt-1 neon-glow-text" id="val-users">0</h1>
+                <div class="mt-2 text-[10px] text-gray-400 bg-sky-950/30 py-0.5 rounded-md inline-block px-2 border border-sky-500/10">
+                    Hari ini: <span class="text-emerald-400 font-bold" id="val-new-users">0</span>
                 </div>
             </div>
-            <div class="neon-card-running p-[2px]">
-                <div class="p-4 rounded-2xl bg-[#070f1e] text-center">
-                    <p class="text-xs text-gray-400 font-semibold uppercase">Tautan Tipe File</p>
-                    <h1 class="text-3xl font-extrabold text-sky-400 mt-1 neon-text-glow" id="val-links">0</h1>
-                    <p class="text-[9px] text-gray-400 mt-1">Total Klik: <span class="text-sky-400 font-bold" id="val-clicks">0</span></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- GRAFIK 1: PENGUNJUNG BOT -->
-        <div class="neon-card-running p-[2px]">
-            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-users text-sky-400 mr-2"></i>Grafik Pertumbuhan Pengunjung</h3>
-                <div class="h-36 w-full">
-                    <canvas id="chartVisitors"></canvas>
+            <div class="neon-card rounded-2xl p-4 text-center relative overflow-hidden">
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Klik</p>
+                <h1 class="text-3xl font-black text-sky-400 mt-1 neon-glow-text" id="val-clicks">0</h1>
+                <div class="mt-2 text-[10px] text-gray-400 bg-sky-950/30 py-0.5 rounded-md inline-block px-2 border border-sky-500/10">
+                    Tautan Aktif: <span class="text-sky-400 font-bold" id="link-count">0</span>
                 </div>
             </div>
         </div>
 
-        <!-- GRAFIK 2: INTERAKSI TAUTAN MEDIA -->
-        <div class="neon-card-running p-[2px]">
-            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-chart-line text-sky-400 mr-2"></i>Grafik Klik Tautan Media</h3>
-                <div class="h-36 w-full">
-                    <canvas id="chartClicks"></canvas>
-                </div>
+        <!-- VISITOR GRAPH -->
+        <div class="neon-card rounded-2xl p-4 space-y-2">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-chart-simple text-sky-400 mr-1"></i> Grafik Aktivitas</p>
+            <div class="h-44 w-full pt-2">
+                <canvas id="chartVisitors"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- TAB 2: TAUTAN DETAIL -->
-    <div id="tab-links" class="tab-content hidden p-4 max-w-md mx-auto space-y-4">
-        <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-gray-300 uppercase"><i class="fa-solid fa-link text-sky-400 mr-2"></i>Daftar Tautan Aktif</h3>
-            <span class="text-xs bg-sky-950 text-sky-400 px-3 py-1 rounded-full font-mono border border-sky-500/20" id="link-count">0 Links</span>
-        </div>
-        <div class="space-y-4" id="link-container">
-            <!-- Diisi otomatis secara riil -->
-        </div>
+    <!-- LINKS TAB -->
+    <div id="tab-links" class="tab-content p-4 max-w-md mx-auto space-y-3">
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2"><i class="fa-solid fa-link text-sky-400 mr-1"></i> Manajemen Tautan</h3>
+        <div class="space-y-2.5" id="link-container"></div>
     </div>
 
-    <!-- TAB 3: SPONSOR DETAIL -->
-    <div id="tab-fsub" class="tab-content hidden p-4 max-w-md mx-auto space-y-4">
-        <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-gray-300 uppercase"><i class="fa-solid fa-circle-check text-sky-400 mr-2"></i>Sponsor FSub Bot Lu</h3>
-            <span class="text-xs bg-sky-950 text-sky-400 px-3 py-1 rounded-full border border-sky-500/20 font-mono" id="fsub-count">0 Ch</span>
-        </div>
-        <div class="space-y-4" id="fsub-container">
-            <!-- Diisi otomatis secara riil -->
-        </div>
+    <!-- FSUB TAB -->
+    <div id="tab-fsub" class="tab-content p-4 max-w-md mx-auto space-y-3">
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2"><i class="fa-solid fa-circle-nodes text-sky-400 mr-1"></i> Database Force Subscribe</h3>
+        <div class="space-y-2.5" id="fsub-container"></div>
     </div>
 
-    <!-- TAB 4: SETTING & FITUR -->
-    <div id="tab-settings" class="tab-content hidden p-4 max-w-md mx-auto space-y-4">
-        <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-gray-300 uppercase"><i class="fa-solid fa-gears text-sky-400 mr-2"></i>Informasi & Fitur</h3>
-            <span class="text-xs bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20 font-mono">AKTIF</span>
-        </div>
-
-        <div class="neon-card-running p-[2px]">
-            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-4">
-                <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-2"></i>Konfigurasi Cepat Bot</h4>
-                
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-900/40 rounded-xl border border-gray-800">
-                        <div>
-                            <p class="text-xs font-semibold text-gray-200">Paksa Gabung (FSub)</p>
-                            <p class="text-[9px] text-gray-500">Mewajibkan user join channel</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked class="sr-only peer" id="toggle-fsub" onchange="playClickHaptic()">
-                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-500"></div>
-                        </label>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-900/40 rounded-xl border border-gray-800">
-                        <div>
-                            <p class="text-xs font-semibold text-gray-200">Tombol Cari Otomatis</p>
-                            <p class="text-[9px] text-gray-500">Tampilkan pencarian inline</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked class="sr-only peer" id="toggle-search" onchange="playClickHaptic()">
-                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-300 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-500"></div>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="p-3 bg-sky-950/20 border border-sky-500/20 rounded-xl space-y-2">
-                    <p class="text-[10px] text-sky-400 font-bold uppercase"><i class="fa-solid fa-circle-info mr-1.5"></i>Informasi Bot Renter</p>
-                    <p class="text-[11px] text-gray-300 leading-relaxed">Dashboard Bot Renter ini membantu Anda memonitor aktivitas link, jumlah total pengguna, dan status berlangganan secara real-time langsung melalui Telegram WebApp.</p>
-                </div>
-
-                <button onclick="contactOwner()" class="block w-full py-2.5 bg-sky-500 hover:bg-sky-600 text-gray-950 rounded-xl text-xs font-bold text-center transition-all active:scale-95 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
-                    <i class="fa-solid fa-headset mr-1"></i> Hubungi Owner (@wavesnoww)
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- BOTTOM NAVIGATION BAR -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-950/95 border-t border-sky-500/20 backdrop-blur-lg py-3.5 px-2 flex justify-around items-center z-40 max-w-md mx-auto rounded-t-3xl shadow-[0_-8px_30px_rgba(56,189,248,0.15)]">
-        
-        <button onclick="toggleMusic()" id="btn-music" class="flex flex-col items-center space-y-1 text-gray-500 hover:text-sky-400 transition-all w-1/5">
-            <i id="music-icon" class="fa-solid fa-circle-play text-lg text-rose-500 animate-pulse"></i>
-            <span id="music-text" class="text-[9px] font-bold text-rose-400 truncate">Play</span>
-        </button>
-
-        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center space-y-1 text-sky-400 w-1/4">
-            <i class="fa-solid fa-chart-pie text-lg"></i>
-            <span class="text-[9px] font-bold">Siklus & Stats</span>
-        </button>
-
-        <button onclick="switchTab('links')" id="nav-links" class="flex flex-col items-center space-y-1 text-gray-500 w-1/4">
-            <i class="fa-solid fa-link text-lg"></i>
-            <span class="text-[9px] font-bold">List Tautan</span>
-        </button>
-
-        <button onclick="switchTab('fsub')" id="nav-fsub" class="flex flex-col items-center space-y-1 text-gray-500 w-1/4">
-            <i class="fa-solid fa-circle-nodes text-lg"></i>
-            <span class="text-[9px] font-bold">Sponsor FSub</span>
-        </button>
-
-        <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center space-y-1 text-gray-500 w-1/4">
-            <i class="fa-solid fa-gears text-lg"></i>
-            <span class="text-[9px] font-bold">Fitur</span>
-        </button>
+    <!-- BOTTOM NAV BAR -->
+    <div class="fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-md border-t border-sky-500/20 py-2.5 flex justify-around items-center z-50 max-w-md mx-auto rounded-t-3xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="text-sky-400 text-xs flex flex-col items-center transition-all duration-300 transform scale-105"><i class="fa-solid fa-chart-pie text-lg mb-0.5"></i><span class="font-medium">Panel</span></button>
+        <button onclick="switchTab('links')" id="nav-links" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-link text-lg mb-0.5"></i><span class="font-medium">Tautan</span></button>
+        <button onclick="switchTab('fsub')" id="nav-fsub" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-circle-nodes text-lg mb-0.5"></i><span class="font-medium">FSub</span></button>
     </div>
 
     <script>
-        // Init SDK Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
-            tg.disableClosingConfirmation();
-        }
+        function renderDashboard() {
+            const params = new URLSearchParams(window.location.search);
 
-        let linksGlobal = [];
-        const globalOwnerUsername = 'wavesnoww'; // Target Owner Sesuai Permintaan
+            // Mapping presisi sesuai Query Params dari Python kamu
+            const botName = params.get('bot_name') || 'Miky Asupan Bot';
+            const botUsername = params.get('bot_username') || '@mikyasupan_bot';
+            const expired = params.get('expired') || 'Tidak Aktif';
+            const limitUsed = params.get('limit_used') || '0';
+            const limitMax = params.get('limit_max') || '0';
+            const totalUsers = params.get('total_users') || '0';
+            const newUsers = params.get('new_users_today') || '0';
+            const totalClicks = params.get('total_clicks') || '0';
 
-        function updateDashboardData() {
-            const urlParams = new URLSearchParams(window.location.search);
-
-            const botName = urlParams.get('bot_name') || 'Miky Asupan Bot';
-            const botUsername = urlParams.get('bot_username') || '@mikyasupan_bot';
-            const expiredDate = urlParams.get('expired') || 'Expired / Tidak Aktif';
-
-            const limitUsed = parseInt(urlParams.get('limit_used') || '0', 10);
-            const limitMax = parseInt(urlParams.get('limit_max') || '5', 10);
-
-            const totalUsers = parseInt(urlParams.get('total_users') || '0', 10);
-            const newUsersToday = parseInt(urlParams.get('new_users_today') || '0', 10);
-            const totalClicks = parseInt(urlParams.get('total_clicks') || '0', 10);
-
-            let fsubList = [];
-            let linksList = [];
-            try {
-                const fsubsRaw = urlParams.get('fsubs');
-                const linksRaw = urlParams.get('links');
-
-                fsubList = fsubsRaw ? JSON.parse(fsubsRaw) : [];
-                linksList = linksRaw ? JSON.parse(linksRaw) : [];
-            } catch (e) {
-                console.error("Gagal parse json utama, coba fallback decode", e);
-                try {
-                    fsubList = JSON.parse(decodeURIComponent(urlParams.get('fsubs') || '[]'));
-                    linksList = JSON.parse(decodeURIComponent(urlParams.get('links') || '[]'));
-                } catch(err) {
-                    console.error("Semua metode pembacaan data gagal", err);
-                }
-            }
-
-            linksGlobal = linksList;
-
-            // Render Header Data
+            // Menyuplai data ke Elemen HTML
             document.getElementById('bot-name').innerText = botName;
-            document.getElementById('bot-username').innerText = botUsername.startsWith('@') ? botUsername : `@${botUsername}`;
-            document.getElementById('val-expired').innerText = expiredDate;
-
-            document.getElementById('val-quota').innerText = `${limitUsed} / ${limitMax} Harian`;
-            const percentage = limitMax > 0 ? Math.min(Math.round((limitUsed / limitMax) * 100), 100) : 0;
-            document.getElementById('quota-percentage').innerText = `${percentage}% Terpakai`;
-
+            document.getElementById('bot-username').innerText = botUsername;
+            document.getElementById('val-expired').innerText = expired;
+            document.getElementById('val-quota').innerText = `${limitUsed} / ${limitMax}`;
             document.getElementById('val-users').innerText = totalUsers;
-            document.getElementById('val-new-users').innerText = `${newUsersToday} user`;
-            document.getElementById('val-links').innerText = linksList.length;
-            document.getElementById('val-clicks').innerText = `${totalClicks} kali`;
+            document.getElementById('val-new-users').innerText = newUsers;
+            document.getElementById('val-clicks').innerText = totalClicks;
 
-            updateCountdown(expiredDate, globalOwnerUsername);
-            renderFsubs(fsubList);
-            renderLinks(linksList, botUsername);
-            updateCharts(totalUsers, totalClicks);
-        }
-
-        function contactOwner() {
-            playClickHaptic();
-            tg.openTelegramLink(`https://t.me/${globalOwnerUsername}`);
-        }
-
-        function renderFsubs(fsubList) {
+            // PARSING FSUB DATA
             const fsubContainer = document.getElementById('fsub-container');
-            document.getElementById('fsub-count').innerText = `${fsubList.length} Ch`;
             fsubContainer.innerHTML = '';
-
-            if (fsubList.length > 0) {
-                fsubList.forEach((ch) => {
-                    fsubContainer.innerHTML += `
-                        <div class="neon-card-running p-[2px]">
-                            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
-                                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fa-solid fa-bullhorn text-sky-400"></i>
-                                        <span class="text-xs font-bold text-gray-200">Channel FSub Aktif</span>
-                                    </div>
-                                    <span class="text-[9px] bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded font-bold">Wajib Join</span>
-                                </div>
-                                <div class="text-xs space-y-1">
-                                    <p class="text-gray-400">📢 Nama: <span class="text-sky-300 font-bold">${ch.name}</span></p>
-                                    <p class="text-gray-400">🆔 ID: <span class="text-gray-300 font-mono">${ch.id}</span></p>
-                                </div>
-                                <a href="${ch.link}" target="_blank" onclick="playClickHaptic()" class="block w-full py-2 bg-sky-950 hover:bg-sky-900 border border-sky-500/30 text-sky-400 rounded-xl text-xs font-bold text-center transition-all">
-                                    <i class="fa-solid fa-up-right-from-square mr-1"></i> Buka Link Channel
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                fsubContainer.innerHTML = `
-                    <div class="text-center text-xs text-gray-500 py-12">
-                        <i class="fa-solid fa-circle-exclamation text-3xl text-sky-800 mb-2"></i>
-                        <p>Tidak ada channel sponsor aktif terdeteksi.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function renderLinks(linksList, botUsername) {
-            const linkContainer = document.getElementById('link-container');
-            document.getElementById('link-count').innerText = `${linksList.length} Links`;
-            linkContainer.innerHTML = '';
-
-            if (linksList.length > 0) {
-                let wrapperHtml = `
-                    <div class="mb-2">
-                        <input type="text" id="link-search" oninput="filterLinks()" placeholder="Cari key tautan..." class="w-full bg-[#070f1e] border border-sky-500/20 rounded-xl px-4 py-2.5 text-xs text-gray-200 focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div id="links-wrapper" class="space-y-4"></div>
-                `;
-                linkContainer.innerHTML = wrapperHtml;
-                const wrapper = document.getElementById('links-wrapper');
-
-                linksList.forEach((link, idx) => {
-                    wrapper.innerHTML += `
-                        <div class="neon-card-running p-[2px] link-item-card" data-key="${link.key.toLowerCase()}" data-type="${link.type.toLowerCase()}">
-                            <div class="p-4 rounded-2xl bg-[#070f1e] space-y-3">
-                                <div class="flex justify-between items-center">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="text-xs font-bold text-sky-400">${idx + 1}.</span>
-                                        <span class="text-xs font-bold text-sky-300 font-mono">${link.short_url.substring(0, 32)}...</span>
-                                    </div>
-                                    <span class="text-[9px] bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded font-mono font-bold">${link.type}</span>
-                                </div>
-                                <div class="flex justify-between items-center text-[10px] text-gray-500 py-1 border-t border-gray-900">
-                                    <span>Tautan Diklik: <b class="text-sky-400">${link.clicks} kali</b></span>
-                                </div>
-                                <div class="grid grid-cols-5 gap-2">
-                                    <button onclick="copyLink('${link.short_url}')" class="col-span-4 py-2 bg-sky-950 hover:bg-sky-900 border border-sky-500/30 text-sky-400 rounded-xl text-xs font-bold transition-all">
-                                        <i class="fa-regular fa-copy mr-1"></i> Salin Link
-                                    </button>
-                                    <button onclick="shareLink('${link.short_url}')" class="col-span-1 py-2 bg-sky-900/40 hover:bg-sky-900 border border-sky-500/20 text-sky-400 rounded-xl text-xs font-bold flex items-center justify-center">
-                                        <i class="fa-solid fa-share-nodes text-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                linkContainer.innerHTML = `
-                    <div class="text-center text-xs text-gray-500 py-12">
-                        <i class="fa-solid fa-folder-open text-3xl text-sky-800 mb-2"></i>
-                        <p>Belum ada tautan media yang dibuat.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function filterLinks() {
-            const query = document.getElementById('link-search').value.toLowerCase();
-            document.querySelectorAll('.link-item-card').forEach(card => {
-                const key = card.getAttribute('data-key');
-                card.classList.toggle('hidden', !key.includes(query));
-            });
-        }
-
-        function updateCountdown(targetDateStr, ownerUsername) {
-            const expiredBadge = document.getElementById('badge-status');
-            if (!expiredBadge) return;
-
-            if (targetDateStr === 'Expired / Tidak Aktif' || !targetDateStr) {
-                expiredBadge.innerHTML = "⚠️ Tidak Aktif";
-                expiredBadge.className = "text-[10px] bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-lg font-bold animate-pulse";
-                tg.MainButton.setText("⚠️ MASA AKTIF HABIS - HUBUNGI OWNER").setColor("#ef4444").show();
-                return;
-            }
-
-            let sisaHari = 30;
             try {
-                // Konversi format YYYY-MM-DD HH:MM:SS ke format yang dipahami Javascript dengan aman
-                const safeDateStr = targetDateStr.replace(/-/g, "/");
-                const targetDate = new Date(safeDateStr);
-                const diffTime = targetDate.getTime() - new Date().getTime();
-                sisaHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const fsubData = JSON.parse(params.get('fsubs') || '[]');
+                if (fsubData.length > 0) {
+                    fsubData.forEach(ch => {
+                        fsubContainer.innerHTML += `
+                            <div class="p-3 bg-slate-900/80 border border-gray-800 rounded-xl flex justify-between items-center shadow-inner">
+                                <div class="truncate pr-2">
+                                    <p class="text-xs font-bold text-sky-400 truncate">${ch.name}</p>
+                                    <p class="text-[9px] text-gray-500 font-mono mt-0.5">${ch.id}</p>
+                                </div>
+                                <a href="${ch.link}" target="_blank" class="px-3 py-1 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-400 text-[10px] rounded-lg font-bold transition-all"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Gabung</a>
+                            </div>`;
+                    });
+                } else {
+                    fsubContainer.innerHTML = '<div class="text-center py-8 text-xs text-gray-500"><i class="fa-solid fa-circle-info block text-lg mb-1.5 opacity-40"></i>Tidak ada channel FSub aktif.</div>';
+                }
             } catch (e) {
-                console.error("Gagal menghitung masa aktif:", e);
-                sisaHari = 5; // Default fallback aman agar tidak crash
+                fsubContainer.innerHTML = '<div class="text-center py-6 text-xs text-rose-400 border border-rose-500/20 bg-rose-500/5 rounded-xl">Gagal memproses data FSub.</div>';
             }
 
-            if (isNaN(sisaHari) || sisaHari <= 0) {
-                expiredBadge.innerHTML = "⚠️ Habis";
-                expiredBadge.className = "text-[10px] bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-lg font-bold";
-                tg.MainButton.setText("⚠️ MASA AKTIF HABIS").setColor("#ef4444").show();
-            } else if (sisaHari <= 7) {
-                expiredBadge.innerHTML = `⚠️ Sisa ${sisaHari} Hari`;
-                expiredBadge.className = "text-[10px] bg-yellow-500/20 text-yellow-500 border border-yellow-500/40 px-2.5 py-1 rounded-lg font-bold animate-pulse";
-                tg.MainButton.setText(`🚀 PERPANJANG SEWA BOT (${sisaHari} HARI)`).setColor("#eab308").show();
-            } else {
-                expiredBadge.innerHTML = `Aktif (${sisaHari} Hari)`;
-                expiredBadge.className = "text-[10px] bg-green-500/20 text-green-400 border border-green-500/40 px-2.5 py-1 rounded-lg font-bold";
-                tg.MainButton.hide();
+            // PARSING LINKS DATA
+            const linkContainer = document.getElementById('link-container');
+            linkContainer.innerHTML = '';
+            try {
+                const linkData = JSON.parse(params.get('links') || '[]');
+                document.getElementById('link-count').innerText = linkData.length;
+                if (linkData.length > 0) {
+                    linkData.forEach((l, i) => {
+                        linkContainer.innerHTML += `
+                            <div class="p-3 bg-slate-900/80 border border-gray-800 rounded-xl space-y-2 shadow-inner">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-gray-500 uppercase">Tautan #${i + 1}</span>
+                                    <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] rounded font-bold font-mono"><i class="fa-solid fa-chart-line mr-1"></i>${l.clicks} Klik</span>
+                                </div>
+                                <p class="text-xs text-gray-300 font-mono truncate select-all bg-black/30 p-2 rounded-lg border border-gray-900">${l.short_url}</p>
+                                <button onclick="navigator.clipboard.writeText('${l.short_url}'); tg.HapticFeedback.notificationOccurred('success'); animateCopy(this);" class="w-full py-1.5 bg-sky-950/60 hover:bg-sky-950 border border-sky-500/20 text-sky-400 text-[11px] rounded-lg font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i class="fa-regular fa-copy"></i> <span>Salin Tautan</span>
+                                </button>
+                            </div>`;
+                    });
+                } else {
+                    linkContainer.innerHTML = '<div class="text-center py-8 text-xs text-gray-500"><i class="fa-solid fa-link-slash block text-lg mb-1.5 opacity-40"></i>Belum ada tautan media yang dibuat.</div>';
+                }
+            } catch (e) {
+                linkContainer.innerHTML = '<div class="text-center py-6 text-xs text-rose-400 border border-rose-500/20 bg-rose-500/5 rounded-xl">Gagal memproses data tautan.</div>';
             }
 
-            tg.MainButton.onClick(() => tg.openTelegramLink(`https://t.me/${ownerUsername}`));
-        }
-
-
-        function playClickHaptic() { if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); }
-        function copyLink(text) { navigator.clipboard.writeText(text); if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success'); }
-        function shareLink(url) { tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}`); }
-
-        function switchTab(tabName) {
-            playClickHaptic();
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-
-            document.querySelectorAll('div.fixed button').forEach(btn => {
-                if(btn.id !== "btn-music") btn.className = "flex flex-col items-center space-y-1 text-gray-500 w-1/4";
-            });
-            document.getElementById(`nav-${tabName}`).className = "flex flex-col items-center space-y-1 text-sky-400 w-1/4";
-            tg.BackButton.toggle(tabName !== 'dashboard');
-        }
-
-        tg.BackButton.onClick(() => switchTab('dashboard'));
-
-        const bgMusic = document.getElementById('bg-music');
-        const musicIcon = document.getElementById('music-icon');
-        const musicText = document.getElementById('music-text');
-        let isPlaying = false;
-
-        function toggleMusic() {
-            if (isPlaying) {
-                bgMusic.pause();
-                musicIcon.className = "fa-solid fa-circle-play text-lg text-rose-500 animate-pulse";
-                musicText.innerText = "Play";
-                isPlaying = false;
-            } else {
-                bgMusic.play().then(() => {
-                    musicIcon.className = "fa-solid fa-circle-pause text-lg text-green-400 animate-spin";
-                    musicText.innerText = "Mute";
-                    isPlaying = true;
-                });
-            }
-        }
-
-        let chart1, chart2;
-        function updateCharts(totalUsers, totalClicks) {
-            const labels = ['Sn', 'Sl', 'Rb', 'Km', 'Jm', 'Sb', 'Mg'];
-            const idxToday = [6, 0, 1, 2, 3, 4, 5][new Date().getDay()];
-
-            const visitorData = [0, 0, 0, 0, 0, 0, 0];
-            const clickData = [0, 0, 0, 0, 0, 0, 0];
-            visitorData[idxToday] = totalUsers;
-            clickData[idxToday] = totalClicks;
-
-            for (let i = 0; i < idxToday; i++) {
-                visitorData[i] = Math.round(totalUsers * (0.4 + (i * 0.1)));
-                clickData[i] = Math.round(totalClicks * (0.3 + (i * 0.1)));
-            }
-
-            if (!chart1) {
-                chart1 = new Chart(document.getElementById('chartVisitors').getContext('2d'), {
-                    type: 'line',
-                    data: { labels: labels, datasets: [{ data: visitorData, borderColor: '#38bdf8', borderWidth: 2, tension: 0.3, fill: true, backgroundColor: 'rgba(56, 189, 248, 0.05)' }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: false }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(31, 41, 55, 0.4)' } } } }
-                });
-            } else { chart1.data.datasets[0].data = visitorData; chart1.update(); }
-
-            if (!chart2) {
-                chart2 = new Chart(document.getElementById('chartClicks').getContext('2d'), {
+            // RENDER GRAPHICS CHART.JS
+            try {
+                const ctx = document.getElementById('chartVisitors').getContext('2d');
+                new Chart(ctx, {
                     type: 'bar',
-                    data: { labels: labels, datasets: [{ data: clickData, backgroundColor: '#0ea5e9', borderRadius: 5 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: false }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(31, 41, 55, 0.4)' } } } }
+                    data: {
+                        labels: ['Total User', 'User Baru', 'Total Klik'],
+                        datasets: [{
+                            data: [parseInt(totalUsers), parseInt(newUsers), parseInt(totalClicks)],
+                            backgroundColor: ['rgba(56, 189, 248, 0.25)', 'rgba(74, 222, 128, 0.25)', 'rgba(244, 63, 94, 0.25)'],
+                            borderColor: ['#38bdf8', '#4ade80', '#f43f5e'],
+                            borderWidth: 1.5,
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                            y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: { size: 9 } } }
+                        }
+                    }
                 });
-            } else { chart2.data.datasets[0].data = clickData; chart2.update(); }
+            } catch (err) { console.error('Gagal memuat chart:', err); }
         }
 
-        window.addEventListener('DOMContentLoaded', updateDashboardData);
+        function animateCopy(btn) {
+            const txt = btn.querySelector('span');
+            const icon = btn.querySelector('i');
+            txt.innerText = 'Tersalin!';
+            icon.className = 'fa-solid fa-check text-emerald-400';
+            setTimeout(() => {
+                txt.innerText = 'Salin Tautan';
+                icon.className = 'fa-regular fa-copy';
+            }, 2000);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            document.querySelectorAll('div.fixed button').forEach(btn => {
+                btn.className = "text-gray-500 text-xs flex flex-col items-center transition-all duration-300";
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.className = "text-sky-400 text-xs flex flex-col items-center transition-all duration-300 transform scale-105";
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
+        window.addEventListener('DOMContentLoaded', renderDashboard);
     </script>
 </body>
-</html>
+        </html>
