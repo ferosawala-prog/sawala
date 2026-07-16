@@ -36,7 +36,6 @@
             position: absolute;
             pointer-events: none;
             user-select: none;
-            /* Efek pudar/samar diatur dinamis via JS, text-shadow diatur tebal 24px */
             text-shadow: 0 0 12px rgba(255, 121, 198, 0.8), 0 0 24px rgba(255, 42, 133, 0.6);
             animation: fall-realistic linear infinite;
             display: flex;
@@ -183,7 +182,7 @@
             <button onclick="switchTab('links')" id="nav-links" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-network-wired text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">LINKS</span></button>
             <button onclick="switchTab('fsub')" id="nav-fsub" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-sliders text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">FSUB</span></button>
         </div>
-    </div>
+                            </div>
 
     <script>
         // ENGINE EMOTICON SAKURA DENGAN PARAMETER KHUSUS
@@ -198,11 +197,8 @@
             petal.classList.add('petal');
             petal.innerText = "🌸";
             
-            // Pengaturan Ukuran 24px - 40px (Rumus: Math.random() * (Max-Min) + Min)
             const size = Math.random() * 16 + 24; 
             petal.style.fontSize = `${size}px`;
-            
-            // Pengaturan Tingkat Samar/Transparansi (Dibikin samar acak di sekitar 0.35 - 0.55 agar terlihat natural)
             petal.style.opacity = Math.random() * 0.2 + 0.35;
             
             petal.style.left = `${Math.random() * 100}vw`;
@@ -248,20 +244,26 @@
             document.getElementById('bot-name').innerText = (params.get('bot_name') || 'Miky Asupan Bot').toUpperCase();
             document.getElementById('bot-username').innerText = params.get('bot_username') || '@mikyasupan_bot';
             
+            // --- PARSING & INTEGRASI NILAI EXPIRED SECARA SINKRON ---
             const expiredStr = params.get('expired') || 'Tidak Aktif';
             const expField = document.getElementById('val-expired');
             expField.innerText = expiredStr;
             
-            try {
-                const targetDate = new Date(expiredStr.replace(/-/g, "/"));
-                const diffTime = targetDate.getTime() - new Date().getTime();
-                const sisaHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                if (isNaN(sisaHari) || sisaHari <= 7 || expiredStr.includes("Expired")) {
-                    expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
-                    document.getElementById('warning-badge').classList.remove('hidden');
+            // Logika memicu badge warning di Web App
+            if (expiredStr.includes("Jam") || expiredStr.includes("Menit") || expiredStr.includes("Expired") || expiredStr.includes("Tidak")) {
+                expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
+                document.getElementById('warning-badge').classList.remove('hidden');
+            } else {
+                const matchHari = expiredStr.match(/(\d+)\s*Hari/);
+                if (matchHari) {
+                    const jumlahHari = parseInt(matchHari[1]);
+                    if (jumlahHari <= 7) {
+                        expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
+                        document.getElementById('warning-badge').classList.remove('hidden');
+                    }
                 }
-            } catch(e) { console.log("Gagal memvalidasi waktu lisensi sewa"); }
+            }
+            // --------------------------------------------------------
 
             document.getElementById('val-quota').innerText = `${params.get('limit_used') || 0} / ${params.get('limit_max') || 5}`;
             
@@ -326,5 +328,5 @@
             tg.HapticFeedback.impactOccurred('medium');
         }
     </script>
-</body>                                                                                                                                                                   
+</body>
 </html>
