@@ -3,140 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Renter Dashboard PRO</title>
+    <title>Cyber Renter Dashboard V3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
         body { background-color: #030712; color: #f3f4f6; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
         .cyber-font { font-family: 'Orbitron', sans-serif; }
-        .neon-border-glow { 
-            background: rgba(11, 21, 40, 0.6); backdrop-filter: blur(8px); border: 2px solid #38bdf8;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.1); transition: all 0.3s ease;
+        
+        /* 1 Detik Running Neon Border System */
+        .neon-run-box { position: relative; border-radius: 16px; overflow: hidden; padding: 2px; background: rgba(11, 21, 40, 0.4); }
+        .neon-run-box::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, #38bdf8, #0ea5e9, transparent 50%);
+            animation: border-spin 1s linear infinite; z-index: 1;
         }
-        .neon-border-glow:hover { box-shadow: 0 0 25px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(56, 189, 248, 0.2); }
-        .neon-text-glow { text-shadow: 0 0 10px rgba(56, 189, 248, 0.7); }
+        .neon-run-box::after { content: ''; position: absolute; inset: 2px; background: #070f1e; border-radius: 14px; z-index: 2; }
+        .neon-inner-content { position: relative; z-index: 3; }
+        @keyframes border-spin { 100% { transform: rotate(360deg); } }
+
+        .neon-text-glow { text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .music-btn { background: rgba(7, 15, 30, 0.8); border: 2px solid #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); backdrop-filter: blur(10px); }
-        .music-pulse { animation: pulseGlow 2s infinite; }
-        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); } 50% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.9); border-color: #7dd3fc; } }
+        .tab-content.active { display: block; }
+        
+        .music-bar-btn {
+            background: rgba(11, 21, 40, 0.8); border: 1px solid rgba(56, 189, 248, 0.3);
+            backdrop-filter: blur(8px); box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+        .music-pulse { animation: neon-flash 1.5s infinite alternate; border-color: #4ade80 !important; }
+        @keyframes neon-flash { 0% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.2); } 100% { box-shadow: 0 0 15px rgba(74, 222, 128, 0.6); } }
     </style>
 </head>
-<body class="pb-28 select-none">
+<body class="pb-36 select-none">
 
-    <!-- FLOATING MUSIC -->
-    <div class="fixed top-4 right-4 z-50">
-        <button onclick="toggleMusic()" id="btn-music" class="music-btn w-12 h-12 rounded-full flex items-center justify-center text-sky-400 active:scale-90"><i class="fa-solid fa-music text-lg" id="music-icon"></i></button>
-        <audio id="bg-music" src="bruno.mp3" loop></audio>
-    </div>
+    <audio id="bg-music" src="bruno.mp3" loop></audio>
 
-    <!-- LOADING SCREEN -->
-    <div id="loading-overlay" class="fixed inset-0 bg-[#030712] z-50 flex flex-col items-center justify-center space-y-4">
-        <div class="w-16 h-16 border-4 border-sky-950 border-t-sky-400 rounded-full animate-spin shadow-[0_0_20px_rgba(56,189,248,0.3)]"></div>
-        <p class="cyber-font text-xs font-bold text-sky-400 tracking-widest animate-pulse">ESTABLISHING CYBER LINK...</p>
-    </div>
-
-    <!-- MAIN HEADER -->
+    <!-- UPLINK MAIN HEADER -->
     <div class="p-4 max-w-md mx-auto mt-2">
-        <div class="neon-border-glow rounded-2xl p-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-14 h-14 rounded-xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-center relative"><i class="fa-solid fa-satellite-dish text-sky-400 text-xl animate-bounce"></i><span class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-gray-950 animate-ping"></span></div>
-                <div><h2 class="cyber-font text-sm font-black text-sky-400 neon-text-glow" id="bot-name">INITIALIZING...</h2><p class="text-xs text-gray-400 font-mono" id="bot-username">@waiting_uplink</p></div>
+        <div class="neon-run-box">
+            <div class="p-4 flex items-center justify-between neon-inner-content">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-center shadow-inner">
+                        <i class="fa-solid fa-satellite-dish text-sky-400 text-lg animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h2 class="cyber-font text-xs font-black text-sky-400 neon-text-glow" id="bot-name">SYNCING...</h2>
+                        <p class="text-xs text-gray-400 font-mono" id="bot-username">@loading_nodes</p>
+                    </div>
+                </div>
+                <span id="badge-status" class="px-2 py-0.5 text-[9px] font-black rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 tracking-wider cyber-font">ONLINE</span>
             </div>
-            <span id="badge-status" class="px-2.5 py-1 text-[10px] font-black rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 tracking-widest cyber-font">ONLINE</span>
         </div>
     </div>
 
-    <!-- TAB 1: PANEL DASHBOARD -->
-    <div id="tab-dashboard" class="tab-content active p-4 max-w-md mx-auto space-y-5">
-        <div class="neon-border-glow rounded-2xl p-4 space-y-3">
-            <div class="flex justify-between items-center border-b border-sky-500/20 pb-2"><span class="cyber-font text-[10px] font-black text-sky-400 tracking-widest"><i class="fa-solid fa-shield-halved mr-1.5"></i> DATA HAK AKSES RENTER</span></div>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-black/40 p-3 rounded-xl border border-gray-800"><p class="text-[9px] text-gray-500 font-bold">MASA LISENSI</p><p class="text-xs font-bold text-sky-300 font-mono" id="val-expired">SECURE...</p></div>
-                <div class="bg-black/40 p-3 rounded-xl border border-gray-800"><p class="text-[9px] text-gray-500 font-bold">LIMIT LINK HARIAN</p><p class="text-xs font-bold text-sky-300 font-mono" id="val-quota">0 / 0</p></div>
+    <!-- TAB 1: DASHBOARD CORE -->
+    <div id="tab-dashboard" class="tab-content active p-4 max-w-md mx-auto space-y-4">
+        
+        <!-- MATRIKS SEWA LISENSI -->
+        <div class="neon-run-box">
+            <div class="p-4 space-y-3 neon-inner-content">
+                <div class="flex justify-between items-center border-b border-sky-500/20 pb-1.5">
+                    <span class="cyber-font text-[9px] font-black text-sky-400 tracking-widest"><i class="fa-solid fa-shield-halved mr-1"></i> IDENTITAS OPERASIONAL</span>
+                    <span id="warning-badge" class="hidden text-[9px] font-bold text-rose-400 bg-rose-500/10 border border-rose-500/30 px-1.5 py-0.5 rounded animate-bounce">⚠️ SEWA MAU HABIS</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-black/40 p-2.5 rounded-xl border border-gray-800">
+                        <p class="text-[9px] text-gray-500 font-bold">MASA LISENSI</p>
+                        <p class="text-xs font-bold text-sky-300 font-mono mt-0.5" id="val-expired">...</p>
+                    </div>
+                    <div class="bg-black/40 p-2.5 rounded-xl border border-gray-800">
+                        <p class="text-[9px] text-gray-500 font-bold">LIMIT LINK HARIAN</p>
+                        <p class="text-xs font-bold text-sky-300 font-mono mt-0.5" id="val-quota">0 / 0</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="neon-border-glow rounded-2xl p-4 text-center">
-                <p class="text-xs text-gray-400 font-bold tracking-widest">TOTAL USER BASE</p>
-                <h1 class="cyber-font text-3xl font-black text-sky-400 mt-1 neon-text-glow" id="val-users">0</h1>
-                <div class="mt-2 text-[10px] text-emerald-400 bg-emerald-500/5 py-0.5 rounded border border-emerald-500/20 inline-block px-2 font-mono">HARI INI: +<span id="val-new-users">0</span></div>
+        <!-- KAUNTER INDIKATOR -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="neon-run-box">
+                <div class="p-4 text-center neon-inner-content">
+                    <p class="text-xs text-gray-400 font-bold tracking-wider">TOTAL USER BASE</p>
+                    <h1 class="cyber-font text-2xl font-black text-sky-400 mt-1 neon-text-glow" id="val-users">0</h1>
+                    <div class="mt-1.5 text-[9px] text-emerald-400 bg-emerald-500/5 py-0.5 rounded border border-emerald-500/20 inline-block px-1.5 font-mono">HARI INI: +<span id="val-new-users">0</span></div>
+                </div>
             </div>
-            <div class="neon-border-glow rounded-2xl p-4 text-center">
-                <p class="text-xs text-gray-400 font-bold tracking-widest">TOTAL DATA KLIK</p>
-                <h1 class="cyber-font text-3xl font-black text-sky-400 mt-1 neon-text-glow" id="val-clicks">0</h1>
-                <div class="mt-2 text-[10px] text-sky-400 bg-sky-500/5 py-0.5 rounded border border-sky-500/20 inline-block px-2 font-mono">INDEX TAUTAN: <span id="link-count">0</span></div>
+            <div class="neon-run-box">
+                <div class="p-4 text-center neon-inner-content">
+                    <p class="text-xs text-gray-400 font-bold tracking-wider">TOTAL DATA KLIK</p>
+                    <h1 class="cyber-font text-2xl font-black text-sky-400 mt-1 neon-text-glow" id="val-clicks">0</h1>
+                    <div class="mt-1.5 text-[9px] text-sky-400 bg-sky-500/5 py-0.5 rounded border border-sky-500/20 inline-block px-1.5 font-mono">INDEX: <span id="link-count">0</span></div>
+                </div>
             </div>
         </div>
 
-        <div class="neon-border-glow rounded-2xl p-4 space-y-2">
-            <p class="cyber-font text-[10px] font-black text-sky-400 tracking-widest"><i class="fa-solid fa-chart-bar mr-1.5"></i> GRAFIK AKTIVITAS UTAMA</p>
-            <div class="h-44 w-full pt-2"><canvas id="chartVisitors"></canvas></div>
+        <!-- GRAFIK UTAMA -->
+        <div class="neon-run-box">
+            <div class="p-4 space-y-2 neon-inner-content">
+                <p class="cyber-font text-[9px] font-black text-sky-400 tracking-widest"><i class="fa-solid fa-chart-bar mr-1"></i> GRAFIK AKTIVITAS UTAMA</p>
+                <div class="h-40 w-full pt-1"><canvas id="chartVisitors"></canvas></div>
+            </div>
         </div>
 
-        <div class="neon-border-glow rounded-2xl p-4 space-y-2">
-            <p class="cyber-font text-[10px] font-black text-sky-400 tracking-widest flex justify-between items-center"><span><i class="fa-solid fa-chart-line mr-1.5 text-emerald-400 animate-pulse"></i> TRACKING FSUB REAL-TIME</span><span class="text-[8px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded font-mono">LIVE FEED</span></p>
-            <div class="h-40 w-full pt-2"><canvas id="chartFSubRealtime"></canvas></div>
+        <!-- GRAFIK REALTIME FSUB -->
+        <div class="neon-run-box">
+            <div class="p-4 space-y-2 neon-inner-content">
+                <p class="cyber-font text-[9px] font-black text-sky-400 tracking-widest flex justify-between items-center">
+                    <span><i class="fa-solid fa-chart-line mr-1 text-emerald-400"></i> MONITORING FSUB REAL-TIME</span>
+                    <span class="text-[8px] px-1 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded font-mono">LIVE FEED</span>
+                </p>
+                <div class="h-36 w-full pt-1"><canvas id="chartFSubRealtime"></canvas></div>
+            </div>
         </div>
     </div>
 
-    <!-- TAB 2 & 3 -->
-    <div id="tab-links" class="tab-content p-4 max-w-md mx-auto space-y-4"><h3 class="cyber-font text-xs font-black text-sky-400 tracking-widest"><i class="fa-solid fa-link mr-1.5"></i> DATABASE LINKS</h3><div class="space-y-3" id="link-container"></div></div>
-    <div id="tab-fsub" class="tab-content p-4 max-w-md mx-auto space-y-4"><h3 class="cyber-font text-xs font-black text-sky-400 tracking-widest"><i class="fa-solid fa-circle-nodes mr-1.5"></i> FORCED SUBSCRIBE CLUSTER</h3><div class="space-y-3" id="fsub-container"></div></div>
+    <!-- TAB CONTAINER LAINNYA -->
+    <div id="tab-links" class="tab-content p-4 max-w-md mx-auto space-y-3"><h3 class="cyber-font text-xs font-black text-sky-400 tracking-widest"><i class="fa-solid fa-link mr-1"></i> DATABASE LINKS</h3><div class="space-y-2.5" id="link-container"></div></div>
+    <div id="tab-fsub" class="tab-content p-4 max-w-md mx-auto space-y-3"><h3 class="cyber-font text-xs font-black text-sky-400 tracking-widest"><i class="fa-solid fa-circle-nodes mr-1"></i> FORCED SUBSCRIBE CLUSTER</h3><div class="space-y-2.5" id="fsub-container"></div></div>
 
-    <!-- NAV BAR SYSTEM -->
-    <div class="fixed bottom-0 left-0 right-0 bg-[#030712]/95 backdrop-blur-md border-t-2 border-sky-500 py-3.5 flex justify-around items-center z-40 max-w-md mx-auto rounded-t-3xl shadow-[0_-8px_30px_rgba(56,189,248,0.2)]">
-        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="text-sky-400 text-xs flex flex-col items-center transition-all duration-300 transform scale-105"><i class="fa-solid fa-cube text-xl mb-1"></i><span class="font-bold tracking-wider uppercase">CORE</span></button>
-        <button onclick="switchTab('links')" id="nav-links" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-network-wired text-xl mb-1"></i><span class="font-bold tracking-wider uppercase">LINKS</span></button>
-        <button onclick="switchTab('fsub')" id="nav-fsub" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-sliders text-xl mb-1"></i><span class="font-bold tracking-wider uppercase">FSUB</span></button>
-            </div>
+    <!-- BOTTOM FLOATING CONTROLLER SYSTEM -->
+    <div class="fixed bottom-0 left-0 right-0 bg-[#030712]/95 backdrop-blur-md border-t-2 border-sky-500 pb-3 pt-2 z-40 max-w-md mx-auto rounded-t-3xl shadow-[0_-8px_30px_rgba(56,189,248,0.2)] space-y-2">
+        
+        <!-- MUSIC CONTROL AT BOTTOM -->
+        <div class="px-6 flex justify-center">
+            <button onclick="toggleMusic()" id="btn-music" class="music-bar-btn w-full py-1.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sky-400 transition-all active:scale-95 text-xs font-bold tracking-wider">
+                <i class="fa-solid fa-play text-[10px]" id="music-icon"></i> 
+                <span id="music-text" class="cyber-font text-[9px]">PLAY BACKGROUND MUSIC (BRUNO)</span>
+            </button>
+        </div>
+
+        <!-- NAV BUTTONS -->
+        <div class="flex justify-around items-center pt-1">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="text-sky-400 text-xs flex flex-col items-center transition-all duration-300 transform scale-105"><i class="fa-solid fa-cube text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">CORE</span></button>
+            <button onclick="switchTab('links')" id="nav-links" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-network-wired text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">LINKS</span></button>
+            <button onclick="switchTab('fsub')" id="nav-fsub" class="text-gray-500 text-xs flex flex-col items-center transition-all duration-300"><i class="fa-solid fa-sliders text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">FSUB</span></button>
+        </div>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
         let chartFSubInstance = null; let isPlaying = false; const audio = document.getElementById('bg-music');
 
         function toggleMusic() {
-            const icon = document.getElementById('music-icon'); const btn = document.getElementById('btn-music');
+            const icon = document.getElementById('music-icon'); 
+            const text = document.getElementById('music-text');
+            const btn = document.getElementById('btn-music');
             if (!isPlaying) {
                 audio.play().then(() => {
-                    isPlaying = true; icon.className = "fa-solid fa-compact-disc text-lg animate-spin text-emerald-400";
-                    btn.classList.add('music-pulse'); tg.HapticFeedback.notificationOccurred('success');
+                    isPlaying = true; 
+                    icon.className = "fa-solid fa-compact-disc animate-spin text-emerald-400";
+                    text.innerText = "MUSIC PLAYING - BRUNO.MP3";
+                    text.className = "cyber-font text-[9px] text-emerald-400 font-bold";
+                    btn.classList.add('music-pulse'); 
+                    tg.HapticFeedback.notificationOccurred('success');
                 }).catch(err => console.log(err));
             } else {
-                audio.pause(); isPlaying = false; icon.className = "fa-solid fa-music text-lg text-sky-400";
-                btn.classList.remove('music-pulse'); tg.HapticFeedback.notificationOccurred('warning');
+                audio.pause(); isPlaying = false; 
+                icon.className = "fa-solid fa-play text-sky-400";
+                text.innerText = "PLAY BACKGROUND MUSIC (BRUNO)";
+                text.className = "cyber-font text-[9px] text-sky-400";
+                btn.classList.remove('music-pulse'); 
+                tg.HapticFeedback.notificationOccurred('warning');
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => { setTimeout(() => { document.getElementById('loading-overlay').classList.add('hidden'); executeCyberEngine(); }, 2000); });
+        // BERJALAN INSTAN TANPA DELAY SCREEN LOADING KOSONG
+        window.addEventListener('DOMContentLoaded', executeCyberEngine);
 
         function executeCyberEngine() {
             const params = new URLSearchParams(window.location.search);
             document.getElementById('bot-name').innerText = (params.get('bot_name') || 'Miky Asupan Bot').toUpperCase();
             document.getElementById('bot-username').innerText = params.get('bot_username') || '@mikyasupan_bot';
-            document.getElementById('val-expired').innerText = params.get('expired') || 'NEVER';
+            
+            // LOGIKA WARN JIKA MAU HABIS (DIBAWAH 7 HARI ATAU EXPIRED)
+            const expiredStr = params.get('expired') || 'Tidak Aktif';
+            const expField = document.getElementById('val-expired');
+            expField.innerText = expiredStr;
+            
+            try {
+                const targetDate = new Date(expiredStr.replace(/-/g, "/"));
+                const diffTime = targetDate.getTime() - new Date().getTime();
+                const sisaHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (isNaN(sisaHari) || sisaHari <= 7 || expiredStr.includes("Expired")) {
+                    expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
+                    document.getElementById('warning-badge').classList.remove('hidden');
+                }
+            } catch(e) { console.log("Gagal memvalidasi waktu lisensi sewa"); }
+
             document.getElementById('val-quota').innerText = `${params.get('limit_used') || 0} / ${params.get('limit_max') || 5}`;
             
             const totalU = params.get('total_users') || '0', newU = params.get('new_users_today') || '0', clicksT = params.get('total_clicks') || '0';
-            document.getElementById('val-users').innerText = totalU; document.getElementById('val-new-users').innerText = newU; document.getElementById('val-clicks').innerText = clicksT;
+            document.getElementById('val-users').innerText = totalU; 
+            document.getElementById('val-new-users').innerText = newU; 
+            document.getElementById('val-clicks').innerText = clicksT;
 
-            // RENDER FSUB LIST
+            // PARSING DATA LAYOUT FSUB
             const fsubContainer = document.getElementById('fsub-container'); fsubContainer.innerHTML = ''; let fsubChannelsArray = [];
             try {
                 fsubChannelsArray = JSON.parse(params.get('fsubs') || '[]');
                 if(fsubChannelsArray.length > 0) {
                     fsubChannelsArray.forEach(ch => {
-                        fsubContainer.innerHTML += `<div class="p-3 bg-slate-950/80 border border-sky-500/20 rounded-xl flex justify-between items-center"><div><p class="text-xs font-bold text-sky-400 cyber-font">${ch.name}</p><p class="text-[10px] text-gray-500 font-mono mt-0.5">${ch.id}</p></div><a href="${ch.link}" target="_blank" class="px-3 py-1 bg-sky-500/10 hover:bg-sky-500/30 border border-sky-500/40 text-sky-400 text-[10px] font-bold rounded-lg">LINK ACCESS</a></div>`;
+                        fsubContainer.innerHTML += `<div class="p-3 bg-slate-950/80 border border-sky-500/20 rounded-xl flex justify-between items-center neon-inner-content"><div><p class="text-xs font-bold text-sky-400 cyber-font">${ch.name}</p><p class="text-[10px] text-gray-500 font-mono mt-0.5">${ch.id}</p></div><a href="${ch.link}" target="_blank" class="px-3 py-1 bg-sky-500/10 hover:bg-sky-500/30 border border-sky-500/40 text-sky-400 text-[10px] font-bold rounded-lg">ACCESS LINK</a></div>`;
                     });
                 } else { fsubContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO ACTIVE FSUB CHANNELS.</p>'; }
-            } catch(e) { }
+            } catch(e) {}
 
-            // RENDER LINKS LIST
+            // PARSING DATA LAYOUT LINKS
             const linkContainer = document.getElementById('link-container'); linkContainer.innerHTML = '';
             try {
                 const linksArray = JSON.parse(params.get('links') || '[]'); document.getElementById('link-count').innerText = linksArray.length;
@@ -145,18 +221,18 @@
                         linkContainer.innerHTML += `<div class="p-3 bg-slate-950/80 border border-sky-500/20 rounded-xl space-y-2"><div class="flex justify-between items-center text-xs"><span class="text-[10px] font-bold text-gray-500 font-mono">NODE #${idx+1}</span><span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] rounded font-mono">${l.clicks} METRICS</span></div><p class="text-xs text-gray-300 font-mono truncate p-2 bg-black/50 border border-gray-900 rounded-lg">${l.short_url}</p><button onclick="navigator.clipboard.writeText('${l.short_url}'); tg.HapticFeedback.notificationOccurred('success'); animateCopy(this);" class="w-full py-1.5 bg-sky-950/40 border border-sky-500/30 text-sky-400 text-[11px] font-bold rounded-lg uppercase tracking-wider"><i class="fa-regular fa-copy"></i> Copy Cyber Link</button></div>`;
                     });
                 } else { linkContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO MEDIA DATA DETECTED.</p>'; }
-            } catch(e) { }
+            } catch(e) {}
 
-            // CHART UTAMA
+            // CHARTS UTAMA (ASLI TIDAK DIUBAH)
             try {
                 new Chart(document.getElementById('chartVisitors').getContext('2d'), {
                     type: 'bar',
                     data: { labels: ['Total User', 'User Baru', 'Total Klik'], datasets: [{ data: [parseInt(totalU), parseInt(newU), parseInt(clicksT)], backgroundColor: ['rgba(56, 189, 248, 0.25)', 'rgba(74, 222, 128, 0.25)', 'rgba(244, 63, 94, 0.25)'], borderColor: ['#38bdf8', '#4ade80', '#f43f5e'], borderWidth: 1.5, borderRadius: 8, borderSkipped: false }] },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }, y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: { size: 9 } } } } }
                 });
-            } catch(err) { }
+            } catch(err) {}
 
-            // CHART FSUB REAL-TIME
+            // CHARTS FSUB LINE GRAPH (ASLI TIDAK DIUBAH)
             try {
                 let labelChannels = fsubChannelsArray.map(c => c.name.substring(0,10));
                 let dataClicksChannel = fsubChannelsArray.map(() => Math.floor(parseInt(clicksT) * 0.45) || 0);
@@ -174,17 +250,16 @@
                         chartFSubInstance.update();
                     }
                 }, 4000);
-            } catch(err) { }
+            } catch(err) {}
         }
 
         function animateCopy(btn) { const txt = btn.querySelector('span'); txt.innerText = 'COPIED TO ENCLAVE!'; setTimeout(() => { txt.innerText = 'Copy Cyber Link'; }, 2000); }
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.getElementById(`tab-${tabId}`).classList.add('active');
-            document.querySelectorAll('div.fixed button').forEach(btn => btn.className = "text-gray-500 text-xs flex flex-col items-center transition-all duration-300");
-            document.getElementById(`nav-${tabId}`).className = "text-sky-400 text-xs flex flex-col items-center transition-all duration-300 transform scale-105";
+            document.querySelectorAll('div.fixed button').forEach(btn => { if(!btn.id.includes('music')) btn.className = "text-gray-500 text-xs flex flex-col items-center transition-all duration-300"; });
+            if(document.getElementById(`nav-${tabId}`)) { document.getElementById(`nav-${tabId}`).className = "text-sky-400 text-xs flex flex-col items-center transition-all duration-300 transform scale-105"; }
             tg.HapticFeedback.impactOccurred('medium');
         }
     </script>
 </body>
 </html>
-    
