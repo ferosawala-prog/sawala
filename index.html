@@ -433,7 +433,9 @@
 
         function updateCountdown(targetDateStr, ownerUsername) {
             const expiredBadge = document.getElementById('badge-status');
-            if (targetDateStr === 'Expired / Tidak Aktif') {
+            if (!expiredBadge) return;
+
+            if (targetDateStr === 'Expired / Tidak Aktif' || !targetDateStr) {
                 expiredBadge.innerHTML = "⚠️ Tidak Aktif";
                 expiredBadge.className = "text-[10px] bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-lg font-bold animate-pulse";
                 tg.MainButton.setText("⚠️ MASA AKTIF HABIS - HUBUNGI OWNER").setColor("#ef4444").show();
@@ -442,11 +444,17 @@
 
             let sisaHari = 30;
             try {
-                const targetDate = new Date(targetDateStr.replace(/-/g, "/"));
-                sisaHari = Math.ceil((targetDate - new Date()) / (1000 * 60 * 60 * 24));
-            } catch (e) {}
+                // Konversi format YYYY-MM-DD HH:MM:SS ke format yang dipahami Javascript dengan aman
+                const safeDateStr = targetDateStr.replace(/-/g, "/");
+                const targetDate = new Date(safeDateStr);
+                const diffTime = targetDate.getTime() - new Date().getTime();
+                sisaHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            } catch (e) {
+                console.error("Gagal menghitung masa aktif:", e);
+                sisaHari = 5; // Default fallback aman agar tidak crash
+            }
 
-            if (sisaHari <= 0) {
+            if (isNaN(sisaHari) || sisaHari <= 0) {
                 expiredBadge.innerHTML = "⚠️ Habis";
                 expiredBadge.className = "text-[10px] bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-lg font-bold";
                 tg.MainButton.setText("⚠️ MASA AKTIF HABIS").setColor("#ef4444").show();
@@ -462,6 +470,7 @@
 
             tg.MainButton.onClick(() => tg.openTelegramLink(`https://t.me/${ownerUsername}`));
         }
+
 
         function playClickHaptic() { if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); }
         function copyLink(text) { navigator.clipboard.writeText(text); if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success'); }
