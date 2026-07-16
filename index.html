@@ -240,29 +240,67 @@
         window.addEventListener('DOMContentLoaded', executeCyberEngine);
 
         function executeCyberEngine() {
-            const params = new URLSearchParams(window.location.search);
-            document.getElementById('bot-name').innerText = (params.get('bot_name') || 'Miky Asupan Bot').toUpperCase();
-            document.getElementById('bot-username').innerText = params.get('bot_username') || '@mikyasupan_bot';
-            
-            // --- PARSING & INTEGRASI NILAI EXPIRED SECARA SINKRON ---
-            const expiredStr = params.get('expired') || 'Tidak Aktif';
-            const expField = document.getElementById('val-expired');
-            expField.innerText = expiredStr;
-            
-            // Logika memicu badge warning di Web App
-            if (expiredStr.includes("Jam") || expiredStr.includes("Menit") || expiredStr.includes("Expired") || expiredStr.includes("Tidak")) {
-                expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
-                document.getElementById('warning-badge').classList.remove('hidden');
+    const params = new URLSearchParams(window.location.search);
+    
+    // Nama & Username Bot
+    document.getElementById('bot-name').innerText = (params.get('bot_name') || 'Sawala').toUpperCase();
+    document.getElementById('bot-username').innerText = params.get('bot_username') || '@durovpavel';
+    
+    // --- SINKRONISASI BERDASARKAN PARAMETER 'EXPIRE' DARI DATABASE ---
+    const expireParam = params.get('expire'); // Menggunakan 'expire' sesuai database Anda
+    const expField = document.getElementById('val-expired');
+    const warningBadge = document.getElementById('warning-badge');
+
+    if (expireParam) {
+        const now = new Date();
+        // Mengganti tanda hubung (-) menjadi garis miring (/) agar kompatibel di semua browser/perangkat (iOS & Android)
+        const expireDate = new Date(expireParam.replace(/-/g, "/")); 
+
+        if (isNaN(expireDate.getTime())) {
+            // Jika isi parameter 'expire' bukan format tanggal biasa (misal teks bebas)
+            expField.innerHTML = `<span class="text-emerald-400 font-bold">${expireParam}</span>`;
+            warningBadge.classList.add('hidden');
+        } else {
+            const diffMs = expireDate - now;
+
+            if (diffMs <= 0) {
+                // Jika sudah melewati tanggal kedaluwarsa (Expired)
+                expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">Expired / Habis</span>`;
+                warningBadge.classList.remove('hidden');
             } else {
-                const matchHari = expiredStr.match(/(\d+)\s*Hari/);
-                if (matchHari) {
-                    const jumlahHari = parseInt(matchHari[1]);
-                    if (jumlahHari <= 7) {
-                        expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
-                        document.getElementById('warning-badge').classList.remove('hidden');
+                // Hitung sisa Hari, Jam, dan Menit secara real-time
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+                let displayTime = "";
+                if (diffDays > 0) {
+                    displayTime = `${diffDays} Hari ${diffHours} Jam`;
+                    
+                    if (diffDays <= 3) {
+                        // Jika sisa waktu <= 3 hari, beri warna kuning/amber dan nyalakan warning-badge
+                        expField.innerHTML = `⚠️ <span class="text-amber-400 font-bold">${displayTime}</span>`;
+                        warningBadge.classList.remove('hidden');
+                    } else {
+                        // Jika sisa waktu aman (> 3 hari), beri warna hijau dan sembunyikan warning-badge
+                        expField.innerHTML = `<span class="text-emerald-400 font-bold">${displayTime}</span>`;
+                        warningBadge.classList.add('hidden');
                     }
+                } else {
+                    // Jika sisa waktu di bawah 24 jam (hanya tersisa jam & menit)
+                    displayTime = `${diffHours} Jam ${diffMinutes} Menit`;
+                    expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${displayTime}</span>`;
+                    warningBadge.classList.remove('hidden');
                 }
             }
+        }
+    } else {
+        // Antisipasi cadangan jika parameter 'expire' tidak dikirimkan sama sekali
+        expField.innerHTML = `<span class="text-emerald-400 font-bold">Aktif (Selamanya)</span>`;
+        warningBadge.classList.add('hidden');
+    }
+    // -----------------------------------------------------------------
+        }
             // --------------------------------------------------------
 
             document.getElementById('val-quota').innerText = `${params.get('limit_used') || 0} / ${params.get('limit_max') || 5}`;
