@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=700;900&family=Rajdhani:wght=600;700&display=swap" rel="stylesheet">
     <style>
         body { 
             background-color: #0b020c; 
@@ -168,15 +168,21 @@
     </div>
 
     <!-- TAB CONTAINER LAINNYA -->
-    <div id="tab-links" class="tab-content p-4 max-w-md mx-auto space-y-3"><h3 class="cyber-font text-xs font-black text-pink-400 tracking-widest"><i class="fa-solid fa-link mr-1"></i> DATABASE LINKS</h3><div class="space-y-2.5" id="link-container"></div></div>
-    <div id="tab-fsub" class="tab-content p-4 max-w-md mx-auto space-y-3"><h3 class="cyber-font text-xs font-black text-pink-400 tracking-widest"><i class="fa-solid fa-circle-nodes mr-1"></i> FORCED SUBSCRIBE CLUSTER</h3><div class="space-y-2.5" id="fsub-container"></div></div>
+    <div id="tab-links" class="tab-content p-4 max-w-md mx-auto space-y-3">
+        <h3 class="cyber-font text-xs font-black text-pink-400 tracking-widest"><i class="fa-solid fa-link mr-1"></i> DATABASE LINKS</h3>
+        <div class="space-y-2.5" id="link-container"></div>
+    </div>
+    <div id="tab-fsub" class="tab-content p-4 max-w-md mx-auto space-y-3">
+        <h3 class="cyber-font text-xs font-black text-pink-400 tracking-widest"><i class="fa-solid fa-circle-nodes mr-1"></i> FORCED SUBSCRIBE CLUSTER</h3>
+        <div class="space-y-2.5" id="fsub-container"></div>
+    </div>
 
     <!-- BOTTOM FLOATING CONTROLLER SYSTEM -->
     <div class="fixed bottom-0 left-0 right-0 bg-[#0b020c]/95 backdrop-blur-md border-t-2 border-[#ff79c6] pb-3 pt-2 z-40 max-w-md mx-auto rounded-t-3xl shadow-[0_-8px_30px_rgba(255,121,198,0.2)] space-y-2">
         
         <!-- MUSIC CONTROL AT BOTTOM -->
         <div class="px-6 flex justify-center">
-            <button onclick="toggleMusic()" id="btn-music" class="music-bar-btn click-active-neon w-full py-1.5 px-4 rounded-xl flex items-center justify-center gap-2 text-[#ff79c6] transition-all text-xs font-bold tracking-wider">
+            <button id="btn-music" class="music-bar-btn click-active-neon w-full py-1.5 px-4 rounded-xl flex items-center justify-center gap-2 text-[#ff79c6] transition-all text-xs font-bold tracking-wider">
                 <i class="fa-solid fa-play text-[10px]" id="music-icon"></i> 
                 <span id="music-text" class="cyber-font text-[9px]">PLAY BACKGROUND MUSIC (BRUNO)</span>
             </button>
@@ -184,290 +190,320 @@
 
         <!-- NAV BUTTONS -->
         <div class="flex justify-around items-center pt-1">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="click-active-neon text-[#ff79c6] text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300 transform scale-105"><i class="fa-solid fa-cube text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">CORE</span></button>
-            <button onclick="switchTab('links')" id="nav-links" class="click-active-neon text-gray-500 text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300"><i class="fa-solid fa-network-wired text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">LINKS</span></button>
-            <button onclick="switchTab('fsub')" id="nav-fsub" class="click-active-neon text-gray-500 text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300"><i class="fa-solid fa-sliders text-lg mb-0.5"></i><span class="font-bold tracking-wider uppercase text-[10px]">FSUB</span></button>
+            <button id="nav-dashboard" class="click-active-neon text-[#ff79c6] text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300 transform scale-105">
+                <i class="fa-solid fa-cube text-lg mb-0.5"></i>
+                <span class="font-bold tracking-wider uppercase text-[10px]">CORE</span>
+            </button>
+            <button id="nav-links" class="click-active-neon text-gray-500 text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300">
+                <i class="fa-solid fa-network-wired text-lg mb-0.5"></i>
+                <span class="font-bold tracking-wider uppercase text-[10px]">LINKS</span>
+            </button>
+            <button id="nav-fsub" class="click-active-neon text-gray-500 text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300">
+                <i class="fa-solid fa-sliders text-lg mb-0.5"></i>
+                <span class="font-bold tracking-wider uppercase text-[10px]">FSUB</span>
+            </button>
         </div>
-    </div>
+                </div>
+    <!-- JAVASCRIPT ENGINE (LOGIKAL SISTEM UTAMA) -->
+    <script>
+        // ==========================================
+        // 1. ENGINE EMOTICON SAKURA (PRODUKSI KELOPAK)
+        // ==========================================
+        const MAX_PETALS = 7; 
+        function createPetal() {
+            const container = document.getElementById('sakura-container');
+            if (!container) return;
+            
+            if (container.getElementsByClassName('petal').length >= MAX_PETALS) return;
+            
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            petal.innerText = "🌸";
+            
+            const size = Math.random() * 16 + 24; 
+            petal.style.fontSize = `${size}px`;
+            petal.style.opacity = Math.random() * 0.2 + 0.35;
+            
+            petal.style.left = `${Math.random() * 100}vw`;
+            const duration = Math.random() * 5 + 7; 
+            petal.style.animationDuration = `${duration}s`;
+            
+            container.appendChild(petal);
+            setTimeout(() => { petal.remove(); }, duration * 1000);
+        }
+        setInterval(createPetal, 1000);
 
-    <!-- MEMANGGIL FILE JAVASCRIPT EXTERNAL -->
-    <script src="app.js"></script>
+        // ==========================================
+        // 2. INITIALIZATION TELEGRAM WEB APP & AUDIO
+        // ==========================================
+        const tg = window.Telegram.WebApp;
+        tg.ready(); 
+        tg.expand();
+
+        let chartFSubInstance = null; 
+        let isPlaying = false; 
+        const audio = document.getElementById('bg-music');
+
+        // ==========================================
+        // 3. CONTROLLER MUSIK (PLAY/PAUSE & HAPTIC)
+        // ==========================================
+        function toggleMusic() {
+            const icon = document.getElementById('music-icon'); 
+            const text = document.getElementById('music-text');
+            const btn = document.getElementById('btn-music');
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true; 
+                    icon.className = "fa-solid fa-compact-disc animate-spin text-emerald-400";
+                    text.innerText = "MUSIC PLAYING - BRUNO.MP3";
+                    text.className = "cyber-font text-[9px] text-emerald-400 font-bold";
+                    btn.classList.add('music-pulse'); 
+                    tg.HapticFeedback.notificationOccurred('success');
+                }).catch(err => console.log(err));
+            } else {
+                audio.pause(); 
+                isPlaying = false; 
+                icon.className = "fa-solid fa-play text-[#ff79c6]";
+                text.innerText = "PLAY BACKGROUND MUSIC (BRUNO)";
+                text.className = "cyber-font text-[9px] text-[#ff79c6]";
+                btn.classList.remove('music-pulse'); 
+                tg.HapticFeedback.notificationOccurred('warning');
+            }
+        }
+
+        // Bind event listener ke tombol musik
+        const musicBtn = document.getElementById('btn-music');
+        if (musicBtn) {
+            musicBtn.addEventListener('click', toggleMusic);
+        }
+
+        // ==========================================
+        // 4. UTAMA: EKSEKUSI DATA PARAMS & RENDER VIEW
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', executeCyberEngine);
+
+        function executeCyberEngine() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Render Nama & Username Bot
+            document.getElementById('bot-name').innerText = (params.get('bot_name') || 'Sawala').toUpperCase();
+            document.getElementById('bot-username').innerText = params.get('bot_username') || '@durovpavel';
+            
+            // Sinkronisasi Masa Kedaluwarsa & Peringatan (Alarm)
+            const expiredStr = params.get('expire') || 'Tidak Aktif';
+            const expField = document.getElementById('val-expired');
+            const warningBadge = document.getElementById('warning-badge');
+            expField.innerText = expiredStr;
+            
+            if (expiredStr.includes("Menit") || expiredStr.includes("Jam") || expiredStr.includes("Expired") || expiredStr.includes("Tidak")) {
+                expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
+                warningBadge.classList.remove('hidden');
+            } else {
+                const matchHari = expiredStr.match(/(\d+)\s*Hari/);
+                if (matchHari) {
+                    const jumlahHari = parseInt(matchHari[1]);
+                    if (jumlahHari <= 3) { 
+                        expField.innerHTML = `⚠️ <span class="text-amber-400 font-extrabold">${expiredStr}</span>`;
+                        warningBadge.classList.remove('hidden');
+                    } else {
+                        expField.innerHTML = `<span class="text-emerald-400 font-bold">${expiredStr}</span>`;
+                        warningBadge.classList.add('hidden');
+                    }
+                } else {
+                    warningBadge.classList.add('hidden');
+                }
+            }
+
+            // Mengisi Limit Tautan
+            document.getElementById('val-quota').innerText = `${params.get('limit_used') || 0} / ${params.get('limit_max') || 5}`;
+            
+            // Membaca Nilai Statistik Umum
+            const totalU = params.get('total_users') || '0';
+            const newU = params.get('new_users_today') || '0';
+            const clicksT = params.get('total_clicks') || '0';
+            
+            document.getElementById('val-users').innerText = totalU; 
+            document.getElementById('val-new-users').innerText = newU; 
+            document.getElementById('val-clicks').innerText = clicksT;
+
+            // Render Forced Subscribe Channels
+            const fsubContainer = document.getElementById('fsub-container'); 
+            fsubContainer.innerHTML = ''; 
+            let fsubChannelsArray = [];
+            try {
+                fsubChannelsArray = JSON.parse(params.get('fsubs') || '[]');
+                if(fsubChannelsArray.length > 0) {
+                    fsubChannelsArray.forEach(ch => {
+                        fsubContainer.innerHTML += `
+                            <div class="p-3 bg-slate-950/80 border border-pink-500/20 rounded-xl flex justify-between items-center neon-inner-content click-active-neon">
+                                <div>
+                                    <p class="text-xs font-bold text-[#ff79c6] cyber-font">${ch.name}</p>
+                                    <p class="text-[10px] text-gray-500 font-mono mt-0.5">${ch.id}</p>
+                                </div>
+                                <a href="${ch.link}" target="_blank" class="px-3 py-1 bg-pink-500/10 hover:bg-pink-500/30 border border-pink-500/40 text-[#ff79c6] text-[10px] font-bold rounded-lg">ACCESS LINK</a>
+                            </div>`;
+                    });
+                } else { 
+                    fsubContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO ACTIVE FSUB CHANNELS.</p>'; 
+                }
+            } catch(e) {
+                fsubContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO ACTIVE FSUB CHANNELS.</p>';
+            }
+
+            // Render Database Links (Disertai Penanda Tipe Video/Photo + Tanda Panah)
+            const linkContainer = document.getElementById('link-container'); 
+            linkContainer.innerHTML = '';
+            try {
+                const linksArray = JSON.parse(params.get('links') || '[]'); 
+                document.getElementById('link-count').innerText = linksArray.length;
+                if(linksArray.length > 0) {
+                    linksArray.forEach((l, idx) => {
+                        const iconType = l.type === 'VIDEO' ? '🎥' : '📸';
+                        const arrowSymbol = `➔ ${iconType} SEND ${l.type}`;
+
+                        const nodeDiv = document.createElement('div');
+                        nodeDiv.className = "p-3 bg-slate-950/80 border border-pink-500/20 rounded-xl space-y-2 click-active-neon";
+                        nodeDiv.innerHTML = `
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-[10px] font-bold text-gray-500 font-mono">NODE #${idx+1}</span>
+                                <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] rounded font-mono">${l.clicks} METRICS</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-black/50 border border-gray-900 rounded-lg">
+                                <p class="text-xs text-gray-300 font-mono truncate mr-2 w-3/5">${l.short_url}</p>
+                                <span class="text-[9px] font-bold text-[#ff79c6] tracking-wider shrink-0 font-mono">${arrowSymbol}</span>
+                            </div>
+                            <button class="copy-btn w-full py-1.5 bg-pink-950/40 border border-pink-500/30 text-[#ff79c6] text-[11px] font-bold rounded-lg uppercase tracking-wider">
+                                <i class="fa-regular fa-copy"></i> <span>Copy Cyber Link</span>
+                            </button>`;
+                        
+                        // Event listener khusus untuk tombol salin per elemen secara dinamis
+                        nodeDiv.querySelector('.copy-btn').addEventListener('click', function() {
+                            navigator.clipboard.writeText(l.short_url);
+                            tg.HapticFeedback.notificationOccurred('success');
+                            animateCopy(this);
+                        });
+
+                        linkContainer.appendChild(nodeDiv);
+                    });
+                } else { 
+                    linkContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO MEDIA DATA DETECTED.</p>'; 
+                }
+            } catch(e) {
+                linkContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO MEDIA DATA DETECTED.</p>';
+            }
+
+            // Inisialisasi Grafik Utama (Bar Chart)
+            try {
+                new Chart(document.getElementById('chartVisitors').getContext('2d'), {
+                    type: 'bar',
+                    data: { 
+                        labels: ['Total User', 'User Baru', 'Total Klik'], 
+                        datasets: [{ 
+                            data: [parseInt(totalU), parseInt(newU), parseInt(clicksT)], 
+                            backgroundColor: ['rgba(255, 121, 198, 0.25)', 'rgba(74, 222, 128, 0.25)', 'rgba(255, 42, 133, 0.25)'], 
+                            borderColor: ['#ff79c6', '#4ade80', '#ff2a85'], 
+                            borderWidth: 1.5, 
+                            borderRadius: 8, 
+                            borderSkipped: false 
+                        }] 
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { display: false } }, 
+                        scales: { 
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }, 
+                            y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: { size: 9 } } } 
+                        } 
+                    }
+                });
+            } catch(err) {}
+
+            // Inisialisasi Grafik Real-Time FSub (Trading View Candlestick Line)
+            try {
+                let labelChannels = fsubChannelsArray.map(c => c.name.substring(0,10));
+                let dataClicksChannel = fsubChannelsArray.map(() => Math.floor(parseInt(clicksT) * 0.45) || 0);
+                if(labelChannels.length === 0) { 
+                    labelChannels = ['Trade Hub 1', 'Trade Hub 2', 'Trade Hub 3', 'Trade Hub 4', 'Trade Hub 5']; 
+                    dataClicksChannel = [12, 15, 11, 23, 19]; 
+                }
+
+                chartFSubInstance = new Chart(document.getElementById('chartFSubRealtime').getContext('2d'), {
+                    type: 'line',
+                    data: { 
+                        labels: labelChannels, 
+                        datasets: [{ 
+                            label: 'Market Flow', 
+                            data: dataClicksChannel, 
+                            borderColor: '#4ade80', 
+                            backgroundColor: 'rgba(74, 222, 128, 0.05)', 
+                            borderWidth: 2, 
+                            pointBackgroundColor: '#0b020c', 
+                            pointBorderColor: '#4ade80', 
+                            pointBorderWidth: 1.5, 
+                            tension: 0.1, 
+                            fill: true 
+                        }] 
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { display: false } }, 
+                        scales: { 
+                            x: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#94a3b8', font: { size: 9 } } }, 
+                            y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: { size: 9 } } } 
+                        } 
+                    }
+                });
+
+                // Simulator Pasar Trading Real-Time (Fluktuasi Acak Naik/Turun secara Real-time)
+                setInterval(() => {
+                    if(chartFSubInstance && dataClicksChannel.length > 0) {
+                        for(let i=0; i<dataClicksChannel.length; i++) { 
+                            const roll = Math.random();
+                            if (roll > 0.6) {
+                                dataClicksChannel[i] += Math.floor(Math.random() * 3) + 1; 
+                            } else if (roll < 0.25) {
+                                dataClicksChannel[i] = Math.max(0, dataClicksChannel[i] - (Math.floor(Math.random() * 2) + 1)); 
+                            }
+                        }
+                        chartFSubInstance.update();
+                    }
+                }, 3000);
+            } catch(err) {}
+        }
+
+        // ==========================================
+        // 5. NAVIGASI TAB & REAKSI ACTION BUTTONS
+        // ==========================================
+        function animateCopy(btn) { 
+            const txt = btn.querySelector('span'); 
+            txt.innerText = 'COPIED TO ENCLAVE!'; 
+            setTimeout(() => { txt.innerText = 'Copy Cyber Link'; }, 2000); 
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); 
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            document.querySelectorAll('div.fixed button').forEach(btn => { 
+                if(!btn.id.includes('music')) {
+                    btn.className = "click-active-neon text-gray-500 text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300"; 
+                }
+            });
+            
+            if(document.getElementById(`nav-${tabId}`)) { 
+                document.getElementById(`nav-${tabId}`).className = "click-active-neon text-[#ff79c6] text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300 transform scale-105"; 
+            }
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        // Bind Event Listener ke Tab Navigasi di Bagian Bawah secara dinamis
+        document.getElementById('nav-dashboard').addEventListener('click', () => switchTab('dashboard'));
+        document.getElementById('nav-links').addEventListener('click', () => switchTab('links'));
+        document.getElementById('nav-fsub').addEventListener('click', () => switchTab('fsub'));
+    </script>
 </body>
     </html>
 
-    // ==========================================
-// 1. ENGINE EMOTICON SAKURA (PRODUKSI KELOPAK)
-// ==========================================
-const MAX_PETALS = 7; 
-function createPetal() {
-    const container = document.getElementById('sakura-container');
-    if (!container) return;
     
-    if (container.getElementsByClassName('petal').length >= MAX_PETALS) return;
-    
-    const petal = document.createElement('div');
-    petal.classList.add('petal');
-    petal.innerText = "🌸";
-    
-    const size = Math.random() * 16 + 24; 
-    petal.style.fontSize = `${size}px`;
-    petal.style.opacity = Math.random() * 0.2 + 0.35;
-    
-    petal.style.left = `${Math.random() * 100}vw`;
-    const duration = Math.random() * 5 + 7; 
-    petal.style.animationDuration = `${duration}s`;
-    
-    container.appendChild(petal);
-    setTimeout(() => { petal.remove(); }, duration * 1000);
-}
-setInterval(createPetal, 1000);
-
-// ==========================================
-// 2. INITIALIZATION TELEGRAM WEB APP & AUDIO
-// ==========================================
-const tg = window.Telegram.WebApp;
-tg.ready(); 
-tg.expand();
-
-let chartFSubInstance = null; 
-let isPlaying = false; 
-const audio = document.getElementById('bg-music');
-
-// ==========================================
-// 3. CONTROLLER MUSIK (PLAY/PAUSE & HAPTIC)
-// ==========================================
-function toggleMusic() {
-    const icon = document.getElementById('music-icon'); 
-    const text = document.getElementById('music-text');
-    const btn = document.getElementById('btn-music');
-    if (!isPlaying) {
-        audio.play().then(() => {
-            isPlaying = true; 
-            icon.className = "fa-solid fa-compact-disc animate-spin text-emerald-400";
-            text.innerText = "MUSIC PLAYING - BRUNO.MP3";
-            text.className = "cyber-font text-[9px] text-emerald-400 font-bold";
-            btn.classList.add('music-pulse'); 
-            tg.HapticFeedback.notificationOccurred('success');
-        }).catch(err => console.log(err));
-    } else {
-        audio.pause(); 
-        isPlaying = false; 
-        icon.className = "fa-solid fa-play text-[#ff79c6]";
-        text.innerText = "PLAY BACKGROUND MUSIC (BRUNO)";
-        text.className = "cyber-font text-[9px] text-[#ff79c6]";
-        btn.classList.remove('music-pulse'); 
-        tg.HapticFeedback.notificationOccurred('warning');
-    }
-}
-
-// ==========================================
-// 4. UTAMA: EKSEKUSI DATA PARAMS & RENDER VIEW
-// ==========================================
-window.addEventListener('DOMContentLoaded', executeCyberEngine);
-
-function executeCyberEngine() {
-    const params = new URLSearchParams(window.location.search);
-    
-    // Render Nama & Username Bot
-    document.getElementById('bot-name').innerText = (params.get('bot_name') || 'Sawala').toUpperCase();
-    document.getElementById('bot-username').innerText = params.get('bot_username') || '@durovpavel';
-    
-    // Sinkronisasi Masa Kedaluwarsa & Peringatan (Alarm)
-    const expiredStr = params.get('expire') || 'Tidak Aktif';
-    const expField = document.getElementById('val-expired');
-    const warningBadge = document.getElementById('warning-badge');
-    expField.innerText = expiredStr;
-    
-    if (expiredStr.includes("Menit") || expiredStr.includes("Jam") || expiredStr.includes("Expired") || expiredStr.includes("Tidak")) {
-        expField.innerHTML = `⚠️ <span class="text-rose-500 font-extrabold">${expiredStr}</span>`;
-        warningBadge.classList.remove('hidden');
-    } else {
-        const matchHari = expiredStr.match(/(\d+)\s*Hari/);
-        if (matchHari) {
-            const jumlahHari = parseInt(matchHari[1]);
-            if (jumlahHari <= 3) { 
-                expField.innerHTML = `⚠️ <span class="text-amber-400 font-extrabold">${expiredStr}</span>`;
-                warningBadge.classList.remove('hidden');
-            } else {
-                expField.innerHTML = `<span class="text-emerald-400 font-bold">${expiredStr}</span>`;
-                warningBadge.classList.add('hidden');
-            }
-        } else {
-            warningBadge.classList.add('hidden');
-        }
-    }
-
-    // Mengisi Limit Tautan
-    document.getElementById('val-quota').innerText = `${params.get('limit_used') || 0} / ${params.get('limit_max') || 5}`;
-    
-    // Membaca Nilai Statistik Umum
-    const totalU = params.get('total_users') || '0';
-    const newU = params.get('new_users_today') || '0';
-    const clicksT = params.get('total_clicks') || '0';
-    
-    document.getElementById('val-users').innerText = totalU; 
-    document.getElementById('val-new-users').innerText = newU; 
-    document.getElementById('val-clicks').innerText = clicksT;
-
-    // Render Forced Subscribe Channels
-    const fsubContainer = document.getElementById('fsub-container'); 
-    fsubContainer.innerHTML = ''; 
-    let fsubChannelsArray = [];
-    try {
-        fsubChannelsArray = JSON.parse(params.get('fsubs') || '[]');
-        if(fsubChannelsArray.length > 0) {
-            fsubChannelsArray.forEach(ch => {
-                fsubContainer.innerHTML += `
-                    <div class="p-3 bg-slate-950/80 border border-pink-500/20 rounded-xl flex justify-between items-center neon-inner-content click-active-neon">
-                        <div>
-                            <p class="text-xs font-bold text-[#ff79c6] cyber-font">${ch.name}</p>
-                            <p class="text-[10px] text-gray-500 font-mono mt-0.5">${ch.id}</p>
-                        </div>
-                        <a href="${ch.link}" target="_blank" class="px-3 py-1 bg-pink-500/10 hover:bg-pink-500/30 border border-pink-500/40 text-[#ff79c6] text-[10px] font-bold rounded-lg">ACCESS LINK</a>
-                    </div>`;
-            });
-        } else { 
-            fsubContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO ACTIVE FSUB CHANNELS.</p>'; 
-        }
-    } catch(e) {
-        fsubContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO ACTIVE FSUB CHANNELS.</p>';
-    }
-
-    // Render Database Links (Disertai Penanda Tipe Video/Photo + Tanda Panah)
-    const linkContainer = document.getElementById('link-container'); 
-    linkContainer.innerHTML = '';
-    try {
-        const linksArray = JSON.parse(params.get('links') || '[]'); 
-        document.getElementById('link-count').innerText = linksArray.length;
-        if(linksArray.length > 0) {
-            linksArray.forEach((l, idx) => {
-                const iconType = l.type === 'VIDEO' ? '🎥' : '📸';
-                const arrowSymbol = `➔ ${iconType} SEND ${l.type}`;
-
-                linkContainer.innerHTML += `
-                    <div class="p-3 bg-slate-950/80 border border-pink-500/20 rounded-xl space-y-2 click-active-neon">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-[10px] font-bold text-gray-500 font-mono">NODE #${idx+1}</span>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] rounded font-mono">${l.clicks} METRICS</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 bg-black/50 border border-gray-900 rounded-lg">
-                            <p class="text-xs text-gray-300 font-mono truncate mr-2 w-3/5">${l.short_url}</p>
-                            <span class="text-[9px] font-bold text-[#ff79c6] tracking-wider shrink-0 font-mono">${arrowSymbol}</span>
-                        </div>
-                        <button onclick="navigator.clipboard.writeText('${l.short_url}'); tg.HapticFeedback.notificationOccurred('success'); animateCopy(this);" class="w-full py-1.5 bg-pink-950/40 border border-pink-500/30 text-[#ff79c6] text-[11px] font-bold rounded-lg uppercase tracking-wider">
-                            <i class="fa-regular fa-copy"></i> <span>Copy Cyber Link</span>
-                        </button>
-                    </div>`;
-            });
-        } else { 
-            linkContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO MEDIA DATA DETECTED.</p>'; 
-        }
-    } catch(e) {
-        linkContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO MEDIA DATA DETECTED.</p>';
-    }
-
-    // Inisialisasi Grafik Utama (Bar Chart)
-    try {
-        new Chart(document.getElementById('chartVisitors').getContext('2d'), {
-            type: 'bar',
-            data: { 
-                labels: ['Total User', 'User Baru', 'Total Klik'], 
-                datasets: [{ 
-                    data: [parseInt(totalU), parseInt(newU), parseInt(clicksT)], 
-                    backgroundColor: ['rgba(255, 121, 198, 0.25)', 'rgba(74, 222, 128, 0.25)', 'rgba(255, 42, 133, 0.25)'], 
-                    borderColor: ['#ff79c6', '#4ade80', '#ff2a85'], 
-                    borderWidth: 1.5, 
-                    borderRadius: 8, 
-                    borderSkipped: false 
-                }] 
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { legend: { display: false } }, 
-                scales: { 
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }, 
-                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: { size: 9 } } } 
-                } 
-            }
-        });
-    } catch(err) {}
-
-    // Inisialisasi Grafik Real-Time FSub (Trading View Candlestick Line)
-    try {
-        let labelChannels = fsubChannelsArray.map(c => c.name.substring(0,10));
-        let dataClicksChannel = fsubChannelsArray.map(() => Math.floor(parseInt(clicksT) * 0.45) || 0);
-        if(labelChannels.length === 0) { 
-            labelChannels = ['Trade Hub 1', 'Trade Hub 2', 'Trade Hub 3', 'Trade Hub 4', 'Trade Hub 5']; 
-            dataClicksChannel = [12, 15, 11, 23, 19]; 
-        }
-
-        chartFSubInstance = new Chart(document.getElementById('chartFSubRealtime').getContext('2d'), {
-            type: 'line',
-            data: { 
-                labels: labelChannels, 
-                datasets: [{ 
-                    label: 'Market Flow', 
-                    data: dataClicksChannel, 
-                    borderColor: '#4ade80', 
-                    backgroundColor: 'rgba(74, 222, 128, 0.05)', 
-                    borderWidth: 2, 
-                    pointBackgroundColor: '#0b020c', 
-                    pointBorderColor: '#4ade80', 
-                    pointBorderWidth: 1.5, 
-                    tension: 0.1, // Membuat chart terasa tajam / patah-patah layaknya trading candle asli
-                    fill: true 
-                }] 
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { legend: { display: false } }, 
-                scales: { 
-                    x: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#94a3b8', font: { size: 9 } } }, 
-                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: { size: 9 } } } 
-                } 
-            }
-        });
-
-        // Simulator Pasar Trading Real-Time (Fluktuasi Acak Naik/Turun secara Real-time)
-        setInterval(() => {
-            if(chartFSubInstance && dataClicksChannel.length > 0) {
-                for(let i=0; i<dataClicksChannel.length; i++) { 
-                    const roll = Math.random();
-                    if (roll > 0.6) {
-                        dataClicksChannel[i] += Math.floor(Math.random() * 3) + 1; 
-                    } else if (roll < 0.25) {
-                        dataClicksChannel[i] = Math.max(0, dataClicksChannel[i] - (Math.floor(Math.random() * 2) + 1)); 
-                    }
-                }
-                chartFSubInstance.update();
-            }
-        }, 3000);
-    } catch(err) {}
-}
-
-// ==========================================
-// 5. NAVIGASI TAB & REAKSI ACTION BUTTONS
-// ==========================================
-function animateCopy(btn) { 
-    const txt = btn.querySelector('span'); 
-    txt.innerText = 'COPIED TO ENCLAVE!'; 
-    setTimeout(() => { txt.innerText = 'Copy Cyber Link'; }, 2000); 
-}
-
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); 
-    document.getElementById(`tab-${tabId}`).classList.add('active');
-    
-    document.querySelectorAll('div.fixed button').forEach(btn => { 
-        if(!btn.id.includes('music')) {
-            btn.className = "click-active-neon text-gray-500 text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300"; 
-        }
-    });
-    
-    if(document.getElementById(`nav-${tabId}`)) { 
-        document.getElementById(`nav-${tabId}`).className = "click-active-neon text-[#ff79c6] text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300 transform scale-105"; 
-    }
-    tg.HapticFeedback.impactOccurred('medium');
-}
